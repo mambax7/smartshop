@@ -1,0 +1,34 @@
+<{include file='db:smartshop_header.html'}>
+
+<{if $cat_nav }>
+	<{foreach item=category from=$categories}>
+		<div class="smartshop_category_index_list">
+			<div class="smartshop_categoryname">
+				<{if $isAdmin}>
+					<{$category.self.editItemLink}><{$category.self.deleteItemLink}>
+				<{/if}>
+				<{$category.self.itemLink}>
+			</div>
+			<div>
+				<{if $category.self.image}>
+					<img class="smartshop_category_image" src="<{$category.self.image}>" alt="<{$category.self.name}>" width="<{$category_list_image_width}>"/>
+				<{/if}>
+				<{$category.self.description}>
+			</div>
+			<{if $category.sub}>
+				<div class="smartshop_subcats">
+					<div class="smartshop_subcats_info"><{$smarty.const._MD_SSHOP_SUBCATEGORIES}></div>
+			  		<{foreach name=loop item=subcat from=$category.sub}>
+			  			<{$subcat.self.itemLink}><{if $smarty.foreach.loop.iteration < $category.subcatscount}> -<{/if}>
+			  		<{/foreach}>
+			  	</div>
+		  	<{/if}>
+		</div>
+	<{/foreach}>
+<{/if}>
+<div style="clear: both;"></div>
+<{if $include_search}>
+	<{include file="db:smartshop_search.html"}>
+<{/if}>
+<{include file='db:smartshop_footer.html'}>
+<{include file='db:system_notification_select.html'}>

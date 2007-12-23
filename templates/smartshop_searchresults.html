@@ -1,0 +1,30 @@
+<{include file="db:smartshop_header.html"}>
+
+<{if $smartshop_search_results}>
+	<h2><{$lang_searchresultstitle}></h2>
+	<{$lang_searchresultstext}>
+
+		<{foreach item=theitem from=$items_array}>
+			<div class="smartshop_search_result">
+				<small>
+		  			<h2><a href="<{$smartshop_url}>item.php?itemid=<{$theitem.itemid}>"><{$theitem.name}></a></h2>
+	  				<{if $theitem.price &&  $display.price}>
+	  					<{$smarty.const._CO_SSHOP_ITEM_PRICE}>:&nbsp;<{$theitem.price}>$<br/>
+	  				<{/if}>
+	  				<{if $smartshop_module_use != 'boutique'}>
+	  				<{$smarty.const._CO_SSHOP_POSTER}>:&nbsp;<{$theitem.uid}><br/>
+	  				<{/if}>
+	  				<{if $display.description}>
+	  					<{$theitem.description}><br/>
+	  				<{/if}>
+		  		</small>
+			</div>
+		<br/>
+		<{/foreach}>
+<{/if}>
+
+<{include file="db:smartshop_search.html"}>
+
+<{if $isAdmin == 1}>
+	<div class="smartshop_adminlinks"><{$smartshop_adminpage}></div>
+<{/if}>

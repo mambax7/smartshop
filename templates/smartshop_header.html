@@ -1,0 +1,33 @@
+<!-- Thank you for keeping this line in the template :-) //-->
+<div style="display: none;"><{$ref_smartfactory}></div>
+<!-- Thank you for keeping this line in the template :-) //-->
+
+<{if $nav_mode =='back' && !$index}>
+	<script type="text/javascript">
+	function back(){
+		history.back();
+	}
+	</script>
+	
+	<div style="">
+		<input name="back" type="button" onClick="back()" value="<<<Précédente" />
+	</div>
+<{elseif $nav_mode =='bread'}>
+	<div class="smartshop_headertable">
+		<{if $module_home}>
+			<span class="smartshop_modulename"><{$module_home}></span>
+		<{/if}>
+		<{if $categoryPath}>
+			<span class="smartshop_breadcrumb">
+			<{if $module_home}>
+				&gt;
+			<{/if}>
+		  	<{$categoryPath}></span>
+		<{/if}>
+	</div>
+<{/if}>
+
+
+
+
+

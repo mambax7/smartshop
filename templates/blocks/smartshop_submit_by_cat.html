@@ -1,0 +1,13 @@
+<{if $block.format == 'list'}>
+	<ul>
+		<{foreach item=category from=$block.categories}>
+	    <li><{$category.link}> </li>
+	  <{/foreach}>
+	</ul>
+<{else}>
+	<{$block.lang_choose}>
+	<form action="<{$xoops_url}>/modules/smartshop/submit.php" method="GET">
+	<input type="hidden" name="op" value="mod"/>
+	<{$block.select}>
+	</form>
+<{/if}>

@@ -1,0 +1,6 @@
+<{foreach item=category from=$block.categories}>
+	<ul><b><{$category.name}></b>
+	<{foreach item=item from=$category.items}>
+	    <li><{$item}></li>
+   <{/foreach}></ul>
+ <{/foreach}>

@@ -1,0 +1,54 @@
+/**
+* $Id: clone.txt,v 1.3 2007/09/20 15:30:16 marcan Exp $
+* Module: SmartNews
+* Author: The SmartFactory <www.smartfactory.ca>
+* Licence: GNU
+*/
+
+/* Traduction française plus bas... */
+
+How can I clone SmartShop ?
+==============================
+
+Cloning SmartShop is possible with a little extra work :-). Here are the steps you need to carefully follow in order to acheive this. In this example, we will perform a cloning from SmartShop to an identical module called SmartNews.
+
+- Rename the module directory from 'smartshop' to 'smartnews'
+
+- With a tool that let you perform find and replace (case sensitively !) in all files of a directory (Advanced Find and Replace is a good example), perform the following changes in all the files of the module :
+  - SmartShop => SmartNews
+  - smartshop => smartnews
+  - SMARTSHOP => SMARTNEWS
+  - Smartcontent => Smartnews
+  - SSHOP => SNEWS
+
+- In smartnews/templates rename all files by changing the prefix from smartshop_ to smartnews_
+
+- In smartnews/templates/blocks rename all files by changing the prefix from smartshop_ to smartnews_
+
+- Install the module. You are ready to go !
+
+
+
+Comment cloner SmartShop ?
+=============================
+
+Cloner SmartShop, c'est possible en executant quelques taches supplementaires :-). Ici, vous trouverez les etapes à suivre, pour pouvoir le faire. Dans cet exemple, nous allons cloner le module SmartShop en un autre module identique appelé SmartNews.
+
+- Renommer le module "smartshop" en "smartnews"
+
+- Avec un outil (ULTRA EDIT) qui vous permet de trouver et de remplacer tous les fichiers d'un répertoire ("Advance Find and Replace" est un bon exemple), effectuer les changements suivant dans tous les fichiers du module :
+- SmartShop => SmartNews
+- smartshop => smartnews
+- SMARTSHOP => SMARTNEWS
+- Smartcontent => Smartnews
+- SSHOP => SNEWS
+
+- Dans le répertoire smartnews/templates renommez tous les fichiers en changeant le prefixe "smartshop_" par "smartnews_"
+- Installez le module. et c'est pret !
+
+
+
+.:: The SmartFactory ::.
+.:: Open Source : smartfactory.ca ::.
+.:: Professionnal : inboxsolutions.net ::.
+.:: support@smartfactory.ca ::

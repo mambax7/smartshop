@@ -1,0 +1,36 @@
+<{include file='db:smartshop_header.html'}>
+<{$table}>
+		<{if $total}>
+			<h2><{$smarty.const._MD_SSHOP_TOTAL}><{$total}>$</h2>
+		<{/if}>
+<div><input type="button" value="<{$smarty.const._MD_SSHOP_GO_BACK_SHOPPING}>" onclick="location='<{$xoops_url}>/modules/smartshop/'"/></div>
+<{$form.javascript}>
+<form style="padding-top: 10px;" name="<{$form.name}>" action="<{$form.action}>" method="<{$form.method}>" <{$form.extra}>>
+  <table class="outer" cellspacing="1">
+    <tr>
+    <th colspan="2"><{$form.title}></th>
+    </tr>
+    <!-- start of form elements loop -->
+    <{foreach item=element from=$form.elements}>
+      <{if $element.hidden != true}>
+	      <{if $element.section}>
+		     <tr> <td colspan=2 name="form_section" id="<{$element.name}>" class="head"><{$element.body}></td></tr>
+		  <{else}>
+			  <tr>
+		        <td class="head"><{$element.caption}>
+		        <{if $element.description}>
+		        	<div style="font-weight: normal"><{$element.description}></div>
+		        <{/if}>
+		        </td>
+		        <td class="<{cycle values="even,odd"}>"><{$element.body}></td>
+		      </tr>
+		  <{/if}>
+      <{else}>
+      <{$element.body}>
+      <{/if}>
+    <{/foreach}>
+    <!-- end of form elements loop -->
+  </table>
+</form>
+<{include file='db:smartshop_footer.html'}>
+<{include file='db:system_notification_select.html'}>

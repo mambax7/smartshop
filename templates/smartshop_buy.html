@@ -1,0 +1,20 @@
+<{include file='db:smartshop_header.html'}>
+
+<{if $infoMessages}>
+	<div class="smart_infoMessage">
+		<{foreach item=message key=id from=$infoMessages}>
+			<div><{$message}></div>
+		<{/foreach}>
+	</div>
+<{/if}>
+
+<{if $errorMessages}>
+	<div class="smart_errorMessage">
+		<{foreach item=message key=id from=$errorMessages}>
+			<div><{$message}></div>
+		<{/foreach}>
+	</div>
+<{/if}>
+
+<{include file='db:smartshop_footer.html'}>
+<{include file='db:system_notification_select.html'}>

@@ -1,0 +1,97 @@
+<{include file='db:smartshop_header.html'}>
+<div id="smartshop_item">
+	<div id="smartshop_item_title">
+		<{if $isAdmin}>
+			<{$item.editItemLink}><{$item.deleteItemLink}>
+		<{/if}>
+		<{$item.name}>&nbsp;
+		<{if $status}>
+			(<{$status}>)
+		<{/if}>
+	</div>
+	
+	<{if $display.description}>
+		<div id="smartshop_item_body"><{$item.description}></div>
+	<{/if}>
+	<{if $item.image}>
+	<{/if}>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<{if $display.image}>
+				  <td style="text-align: center; width: <{$img_max_width}>px;"><img src="<{$item.image}>" alt="<{$item.name}>" /></td>
+			<{/if}>
+			<td>
+				<div id="smartshop_item_otherinfo">
+					<{if $item.external_link && $display.external_link}>
+				  		<div id="smartshop_items_link_url"><{$item.external_link}></div>
+					<{/if}> 
+					<{foreach item=customField from=$item.customFields}> 
+						<{if $item[$customField.name]}>
+				  			<div><{$customField.caption}> : <{$item[$customField.name]}></div>
+				  		<{/if}>
+					<{/foreach}>
+					<{if $for_sale && $display.price}>
+						<div><{$smarty.const._CO_SSHOP_ITEM_PRICE}> : <{$item.price}></div>
+					<{/if}>
+					<{if $display.date}>
+						<div><{$smarty.const._CO_SSHOP_ITEM_DATE}> : <{$item.date}></div>
+					<{/if}>
+					<{if $display.counter}>
+						<div id="smartshop_item_counter"><{$smarty.const._CO_SSHOP_HITS}> : <{$item.counter}></div>
+					<{/if}>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<{if $display_poster}>
+				<div id="smartshop_itemnav_image" >
+					<img src="<{$item.poster.avatar}>" />
+				</div>
+			<{/if}>
+			</td>
+			<td>
+				<div id="smartshop_itemnav_top"></div>
+				<div id="smartshop_item_otherinfo">
+					<{if $display_poster}>
+						<div><{$smarty.const._CO_SSHOP_POSTER}> : <{$item.poster.userlink}></div>
+						<div><{$smarty.const._CO_SSHOP_PM}> : <{$item.poster.pmlink}></div>
+						<{if $item.poster.email}>
+							<div id="smartshop_courriel">
+								<{$smarty.const._CO_SSHOP_EMAIL}> : <a href="mailto:<{$item.poster.email}>"><{$item.poster.email}></a>
+							</div>
+						<{/if}>
+					<{/if}>
+				</div>
+			</td>
+		</tr>
+	</table>
+	<div id="smartshop_item_print_and_mail">
+<!--		<{$item.printAndMailLink}> //-->
+		<{if $can_edit}>
+			<{$autoEditLinks}>
+		<{/if}>
+		<{if $smartshop_module_use=='boutique' && !$in_basket}>
+			<div class="smartshow_buy_now">
+				<form action='<{$xoops_url}>/modules/smartshop/item.php' method='post'>
+				<{$smarty.const._MD_SSHOP_ADD}>
+				<select name='quantity'>
+				<{$qty_opt}>
+				</select>
+				<{$smarty.const._MD_SSHOP_TO_BASKET}>
+				<input type='hidden' name='itemid' value='<{$item.itemid}>'>
+				<input type='submit' name='add_basket' value='<{$smarty.const._MD_SSHOP_SUBMIT}>'>
+				</form>
+			</div>
+		<{/if}>
+		<{if $message}>
+			<div class="smartshow_buy_now"><{$message}></div>
+		<{/if}>
+	</div>
+</div>
+<{if $include_search}>
+	<{include file="db:smartshop_search.html"}>
+<{/if}>
+
+<{include file='db:smartshop_footer.html'}>
+<{include file='db:system_notification_select.html'}>

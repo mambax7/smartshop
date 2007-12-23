@@ -1,0 +1,140 @@
+/**
+* $Id: module.css,v 1.4 2007/09/20 15:52:47 felix Exp $
+* Module: SmartFAQ
+* Author: marcan <marcan@notrevie.ca>
+* Licence: GNU
+*/
+
+.smartshop_headertable {padding: 0; margin: 0; border-bottom: 1px solid; margin-bottom: 10px;}
+.smartshop_modulename {font-size: 10px; text-align: left; font-weight: bold; padding-right: 0.3em;	line-height: 18px;}
+.smartshop_breadcrumb {font-size: 10px; line-height: 18px;}
+.smartshop_adminlinks {padding-top: 15px; padding-bottom: 5px; font-size: 10px; text-align: center; line-height: 18px;}
+#smartshop_item_title {font-size: 18px; font-weight: bold; padding-bottom: 5px;}
+#smartshop_item_body {padding-bottom: 10px; font-size: 12px;}
+#smartshop_item_otherinfo{line-height: 135%; font-size: 12px;}
+#smartshop_item_print_and_mail {padding-top:15px;padding-left:15px;}
+.smartshop_category_index_list{clear: both; padding-top: 5px; padding-bottom: 5px;}
+.smartshop_categoryname {padding-bottom: 5px; vertical-align: middle; font-size: 120%; text-align: left; font-weight: bold; margin: 0; line-height: 120%;}
+.smartshop_category_image {float: left; padding-right:5px; display: block;}
+.smartshop_category_header { padding-top: 10px; padding-bottom: 5px;}
+.smartshop_subcats {padding-top: 5px; font-size: 90%;}
+.smartshop_subcats_info {padding-bottom: 5px; font-weight: bold;}
+.smartshop_collaps_title {margin-bottom: 2px; margin-top: 5px; font-size: 130%; line-height: 130%; font-weight: bold; display: block;}
+.smartshop_collaps_info {margin: 3px 0 12px 0; display: block;}
+.smartshop_item_head_cat {padding-top: 0px; text-align: right; font-style:normal; vertical-align: middle; display: block;}
+.smartshop_item_head_who {padding-top: 5px; text-align: right; font-style:normal; vertical-align: middle; display: block;}
+#smartshop_item_lien {
+display: block;
+padding-top:15px;
+}
+
+.smartshop_item_image {
+display: block;
+padding-right: 10px;
+padding-bottom: 5px;
+}
+
+#smartshop_item_counter {
+display: block;
+padding-bottom: 10px;
+
+}
+
+#smartshop_courriel {
+display: block;
+padding-bottom: 30px;
+
+}
+.smartshop_items_link {width: 50%; vertical-align: middle;}
+.smartshop_items_list {padding-top: 5px;font-size: 12px;}
+#smartshop_item
+{
+	color: #0D0D0D;
+	padding-bottom: 7px;
+	font-size: 12px;
+}
+#smartshop_items_list_item {
+padding-top: 2px;
+margin-left: 0px;
+padding-bottom: 5px;
+padding-left: 3px;
+font-size: 12px;
+}
+
+.smartshop_table_items {
+border-width: 1px;
+border-top-style: none;
+border-right-style: none;
+border-bottom-style: dotted;
+border-left-style: none;
+padding-top: 1px;
+margin-left: 0px;
+padding-bottom: 5px;
+padding-left: 0px;
+font-size: 12px;
+}
+
+.smartshop_items_image {
+width: 200px;
+padding-top: 0px;
+padding-right: 5px;
+margin-left: 0px;
+padding-bottom: 0px;
+padding-left: 0px;
+text-align: center;
+}
+
+#smartshop_items_name {
+font-weight: bold;
+padding-top: 7px;
+margin-left: 0px;
+padding-bottom: 3px;
+padding-left: 0px;
+font-size: 12px;
+}
+#smartshop_items_modif {
+float: right;
+padding-top: 0px;
+margin_top: opx;
+}
+#smartshop_items_description {
+padding-top: 0px;
+margin-left: 0px;
+padding-bottom: 3px;
+padding-left: 0px;
+font-size: 12px;
+}
+
+#smartshop_items_link_url {
+padding-top: 0px;
+margin-left: 0px;
+padding-bottom: 3px;
+padding-left: 0px;
+font-size: 12px;
+}
+.smartshop_list {padding: 8px;  font-size: 16px;}
+.smartshop_category_dsc {margin: 3px 0 10px 0; font-size: small; display: block;}
+.smartshop_indexfooter {font-size: 10px; font-weight: bold; text-align: center;  padding: 10px;}
+.smartshop_itemfooter {font-size: 10px; font-weight: bold; text-align: center;  padding: 10px;}
+.itemFoot {text-align: right; padding:3px; border:1px solid #808080;}
+.itemFoot {text-align: right; padding:3px; border:1px solid #808080; }
+.pre_itemInfo {padding-top: 5px;}
+.modfooter{text-align: center; padding-top: 6px; font-size: 9px; border-top: 0px solid #ccc; }
+.spotlight_readmore{font-size: 10px; text-align: right; border-bottom: 1px solid #000000;}
+#smartshop_itemnav_top{padding-top: 5px; font-size: 10px; text-align: left; }
+#smartshop_itemnav_image{display: block; float: left; width: 125px; padding-top: 5px; text-align: center; }
+.smartshop_itemnav_bottom{padding-top: 5px; padding-bottom: 5px; font-size: 10px; text-align: center; }
+.smartshop_items_navbar{text-align: center; padding: 10px;}
+#smartshop_submitform{margin-top: 5px;}
+#smartshop_searchbox {border: solid 0px; font-size: 85%; width: 400px; text-align: left;}
+#smartshop_searchbox select {width:260px;}
+.smartshow_buy_now{text-align: center; font-size: 180%; font-weight: bold;}
+
+#smartshop_available_credits {
+	margin-bottom: 10px;
+	padding: 10px;
+	text-align: center;
+	border: 2px solid #F2F2F2;
+	font-size: 130%;
+	font-weight: bold;
+}
