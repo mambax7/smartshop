@@ -165,7 +165,25 @@ $i++;
 $modversion['templates'][$i]['file'] = 'smartshop_buy.html';
 $modversion['templates'][$i]['description'] = 'Buy page';
 
+$i++;
+$modversion['templates'][$i]['file'] = 'smartshop_list_view.html';
+$modversion['templates'][$i]['description'] = 'List view for search results';
 
+$i++;
+$modversion['templates'][$i]['file'] = 'smartshop_table_view.html';
+$modversion['templates'][$i]['description'] = 'Table view for search results';
+
+$i++;
+$modversion['templates'][$i]['file'] = 'smartshop_category_print.html';
+$modversion['templates'][$i]['description'] = 'Print category page';
+
+$i++;
+$modversion['templates'][$i]['file'] = 'smartshop_category_tableview_print.html';
+$modversion['templates'][$i]['description'] = 'Print category page';
+
+$i++;
+$modversion['templates'][$i]['file'] = 'smartshop_item_print.html';
+$modversion['templates'][$i]['description'] = 'Display item page';
 
 /*$i++;
 $modversion['templates'][$i]['file'] = 'smartshop_buy.html';
@@ -256,9 +274,21 @@ $modversion['config'][$i]['description'] = '_MI_SSHOP_SORT_DSC';
 $modversion['config'][$i]['formtype'] = 'select';
 $modversion['config'][$i]['valuetype'] = 'text';
 $modversion['config'][$i]['options'] = array(  _MI_SSHOP_SORT_WEIGHT => 'weight ASC',
-                                   			 _MI_SSHOP_SORT_DATE => 'date DESC'
+                                   			 _MI_SSHOP_SORT_DATE => 'date DESC',
+                                   			 _MI_SSHOP_SORT_ALPHA => 'name ASC'
                                    			  );
-$modversion['config'][$i]['default'] = 'weight';
+$modversion['config'][$i]['default'] = 'weight ASC';
+
+$i++;
+$modversion['config'][$i]['name'] = 'cat_sort';
+$modversion['config'][$i]['title'] = '_MI_SSHOP_CAT_SORT';
+$modversion['config'][$i]['description'] = '_MI_SSHOP_SORT_DSC';
+$modversion['config'][$i]['formtype'] = 'select';
+$modversion['config'][$i]['valuetype'] = 'text';
+$modversion['config'][$i]['options'] = array(  _MI_SSHOP_SORT_WEIGHT => 'weight',
+                                   			 _MI_SSHOP_SORT_ALPHA => 'name'
+                                   			  );
+$modversion['config'][$i]['default'] = 'weight ASC';
 
 $i++;
 $modversion['config'][$i]['name'] = 'nav_mode';
@@ -279,9 +309,9 @@ $modversion['config'][$i]['description'] = '_MI_SSHOP_CAT_TPL_DSC';
 $modversion['config'][$i]['formtype'] = 'select';
 $modversion['config'][$i]['valuetype'] = 'text';
 $modversion['config'][$i]['options'] = array(  _MI_SSHOP_TPL_LIST => 'list',
-                                   			 _MI_SSHOP_TPL_TABLE => 'tableview'
+                                   			 _MI_SSHOP_TPL_TABLE => 'table'
                                    			 );
-$modversion['config'][$i]['default'] = 'tableview';
+$modversion['config'][$i]['default'] = 'table';
 
 $i++;
 $modversion['config'][$i]['name'] = 'display_fields';
@@ -357,6 +387,22 @@ $modversion['config'][$i]['valuetype'] = 'text';
 $modversion['config'][$i]['default'] = '';
 
 $i++;
+$modversion['config'][$i]['name'] = 'header_print';
+$modversion['config'][$i]['title'] = '_MI_SSHOP_HEADER_PRINT';
+$modversion['config'][$i]['description'] = '_MI_SSHOP_HEADER_PRINT_DSC';
+$modversion['config'][$i]['formtype'] = 'textarea';
+$modversion['config'][$i]['valuetype'] = 'text';
+$modversion['config'][$i]['default'] = '';
+
+$i++;
+$modversion['config'][$i]['name'] = 'footer_print';
+$modversion['config'][$i]['title'] = '_MI_SSHOP_FOOTER_PRINT';
+$modversion['config'][$i]['description'] = '_MI_SSHOP_FOOTER_PRINT_DSC';
+$modversion['config'][$i]['formtype'] = 'textarea';
+$modversion['config'][$i]['valuetype'] = 'text';
+$modversion['config'][$i]['default'] = '';
+
+$i++;
 $modversion['config'][$i]['name'] = 'maximum_imagesize';
 $modversion['config'][$i]['title'] = '_MI_SSHOP_MAX_SIZE';
 $modversion['config'][$i]['description'] = '_MI_SSHOP_MAX_SIZEDSC';
@@ -408,6 +454,32 @@ $modversion['config'][$i]['formtype'] = 'yesno';
 $modversion['config'][$i]['valuetype'] = 'int';
 $modversion['config'][$i]['default'] = 1;
 
+$i++;
+$modversion['config'][$i]['name'] = 'txtarea_width';
+$modversion['config'][$i]['title'] = '_MI_SSHOP_TAREA_WIDTH';
+$modversion['config'][$i]['description'] = '_MI_SSHOP_TAREA_WIDTH_DSC';
+$modversion['config'][$i]['formtype'] = 'textbox';
+$modversion['config'][$i]['valuetype'] = 'text';
+$modversion['config'][$i]['default'] = '60';
+
+$i++;
+$modversion['config'][$i]['name'] = 'txtarea_height';
+$modversion['config'][$i]['title'] = '_MI_SSHOP_TAREA_HEIGHT';
+$modversion['config'][$i]['description'] = '_MI_SSHOP_TAREA_HEIGHT_DSC';
+$modversion['config'][$i]['formtype'] = 'textbox';
+$modversion['config'][$i]['valuetype'] = 'text';
+$modversion['config'][$i]['default'] = '5';
+
+if($smartshop_module_use == 'boutique'){
+	$i++;
+	$modversion['config'][$i]['name'] = 'max_qty_basket';
+	$modversion['config'][$i]['title'] = '_MI_SSHOP_MAX_QTY_BASKET';
+	$modversion['config'][$i]['description'] = '_MI_SSHOP_MAX_QTY_BASKET_DSC';
+	$modversion['config'][$i]['formtype'] = 'textbox';
+	$modversion['config'][$i]['valuetype'] = 'text';
+	$modversion['config'][$i]['default'] =  '10';
+
+}
 //submission and expiration configs --  only for dynamic_dir and adds
 if($smartshop_module_use == 'dynamic_directory' ||$smartshop_module_use == 'adds'){
 	$i++;
@@ -489,7 +561,7 @@ if($smartshop_module_use == 'dynamic_directory' ||$smartshop_module_use == 'adds
 
 
 }
-$i++;
+/*$i++;
 	$modversion['config'][$i]['name'] = 'use_custom_version';
 	$modversion['config'][$i]['title'] = '_MI_SSHOP_CUSTOM_VERSION';
 	$modversion['config'][$i]['description'] = '_MI_SSHOP_CUSTOM_VERSIONDSC';
@@ -498,7 +570,7 @@ $i++;
 												'Auburn manufacturing inc.' => 'ami'
 	                                  		 );
 	$modversion['config'][$i]['default'] = 'std';
-
+*/
 // Notification
 $modversion['hasNotification'] = 1;
 $modversion['notification']['lookup_file'] = 'include/notification.inc.php';

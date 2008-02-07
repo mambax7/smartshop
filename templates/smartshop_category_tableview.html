@@ -65,7 +65,7 @@
 	<{if $items}>
 		<div class="smartshop_pages_navbar"><{$itemnav}></div>
 			<table>
-				<tr>
+				<tr  class="head">
 					<td ></td>
 				  	<td><{if $current_sort == 'name'}>
 		  					<a href='<{$xoops_url}>/modules/smartshop/category.php?categoryid=<{$categoryid}>&sort=name&order=<{$rev_order}>'><{$smarty.const._MD_SSHOP_TITLE}><{$order_icon}></a>
@@ -102,13 +102,13 @@
 		  				<{/if}>
 				  	</td>
 					<{/if}>	
-					<{if $smartshop_module_use=='boutique'}>
+					<{if $smartshop_module_use=='boutique'  && $max_qty_basket}>
 						<td>
 						</td>
 					<{/if}>								
 		   		</tr>
 				<{foreach key=key item=item from=$sort_array}>
-					<tr>
+					<tr class='<{cycle values="even, odd"}>'>
 						<td height="50" >
 			  				<{if $smartshop_module_use == 'adds'}>
 			  					<a href="<{$items.$key.link_url}>" target="_blank"><img src="<{$items.$key.image}>"</a>
@@ -139,16 +139,18 @@
 							<{if $for_sale && $display.price}>
 								<td><{$items.$key.price}></td>
 							<{/if}>	
-							<{if $smartshop_module_use=='boutique'}>
+							<{if $smartshop_module_use=='boutique'  && $max_qty_basket}>
 								<td>
 									<{if $items.$key.message}>
 										<{$items.$key.message}>
 									<{else}>
 										<form action='<{$xoops_url}>/modules/smartshop/item.php' method='post'>
 										<{$smarty.const._MD_SSHOP_ADD}>
-										<select name='quantity'>
-										<{$qty_opt}>
-										</select>
+										<{if $qty_opt}>	
+											<select name='quantity'>
+											<{$qty_opt}>
+											</select>
+										<{/if}>
 										<{$smarty.const._MD_SSHOP_TO_BASKET}>
 										<input type='hidden' name='itemid' value='<{$items.$key.itemid}>'>
 										<input type='submit' name='add_basket' value='<{$smarty.const._MD_SSHOP_SUBMIT}>'>
@@ -162,9 +164,10 @@
 		
 			<{$category.self.pub}>
 			<div class="smartshop_pages_navbar"><{$itemnav}></div>
-		</div>
+		
 	<{/if}>
-
+</div>
+<div><{$print_link}></div>
 <{if $include_search}>
 	<{include file="db:smartshop_search.html"}>
 <{/if}>

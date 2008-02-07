@@ -3,7 +3,11 @@
 <{else}>
 	<ul>
 	<{foreach item=item from=$block.items}>
-		<li><a href='<{$xoops_url}>/modules/smartshop/item.php?itemid=<{$item.id}>'><{$item.item_name}></a>&nbsp;(<{$item.quantity}>)</li>
+		<li><a href='<{$xoops_url}>/modules/smartshop/item.php?itemid=<{$item.id}>'><{$item.item_name}></a>
+		<{if $block.max_qty_basket > 1}>
+			&nbsp;(<{$item.quantity}>)
+		<{/if}>
+		</li>
 	 <{/foreach}>
 	</ul>
 	<input type="button" value="<{$smarty.const._MB_SSHOP_BASKET_DETAILS}>" onClick="location='<{$xoops_url}>/modules/smartshop/transaction.php'">

@@ -193,6 +193,26 @@ switch ($op) {
 		foreach($itemsObj as $itemid=>$itemobj) {
 			$itemobj->setVar('weight', isset($_POST['weight_' . $itemid]) ? intval($_POST['weight_' . $itemid]) : 0);
 			$itemobj->setVar('status', isset($_POST['status_' . $itemid]) ? intval($_POST['status_' . $itemid]) : 0);
+			$smartshop_item_handler->insert($itemobj);
+		}
+			redirect_header($smart_previous_page, 3, _CO_SOBJECT_NO_RECORDS_UPDATED);
+		exit;
+
+		break;
+
+	case "updateCat":
+		if (!isset($_POST['SmartshopCategory_objects']) || count($_POST['SmartshopCategory_objects']) == 0) {
+			redirect_header($smart_previous_page, 3, _CO_SOBJECT_NO_RECORDS_TO_UPDATE);
+			exit;
+		}
+
+		$criteria = new CriteriaCompo();
+		$criteria->add(new Criteria('categoryid', '(' . implode(', ', $_POST['SmartshopCategory_objects']) . ')', 'IN'));
+		$categoriesObj = $smartshop_category_handler->getObjects($criteria, true);
+		foreach($categoriesObj as $categoryid=>$categoryObj) {
+			$categoryObj->setVar('weight', isset($_POST['weight_' . $categoryid]) ? intval($_POST['weight_' . $categoryid]) : 0);
+			$categoryObj->setVar('searchable', isset($_POST['searchable_' . $categoryid]) ? intval($_POST['searchable_' . $categoryid]) : 0);
+			$smartshop_category_handler->insert($categoryObj);
 		}
 			redirect_header($smart_previous_page, 3, _CO_SOBJECT_NO_RECORDS_UPDATED);
 		exit;
@@ -213,7 +233,7 @@ switch ($op) {
 			$attributobj->setVar('required', isset($_POST['required_' . $attributid]) ? intval($_POST['required_' . $attributid]) : 0);
 			$attributobj->setVar('sortable', isset($_POST['sortable_' . $attributid]) ? intval($_POST['sortable_' . $attributid]) : 0);
 			$attributobj->setVar('searchable', isset($_POST['searchable_' . $attributid]) ? intval($_POST['searchable_' . $attributid]) : 0);
-			$attributobj->setVar('display', isset($_POST['display_' . $attributid]) ? intval($_POST['display' . $attributid]) : 0);
+			$attributobj->setVar('display', isset($_POST['display_' . $attributid]) ? intval($_POST['display_' . $attributid]) : 0);
 			$attributobj->setVar('summarydisp', isset($_POST['summarydisp_' . $attributid]) ? intval($_POST['summarydisp_' . $attributid]) : 0);
 
 			$smartshop_category_attribut_handler->insert($attributobj);
@@ -272,6 +292,9 @@ switch ($op) {
 		$objectTable->addColumn(new SmartObjectColumn('name', 'left', false, "getListItemsLink"));
 		$objectTable->addCustomAction('getCreateItemLink');
 		$objectTable->addCustomAction('getCreateAttributLink');
+		$objectTable->addColumn(new SmartObjectColumn('weight', 'center', 100, 'getWeightControl'));
+		$objectTable->addColumn(new SmartObjectColumn('searchable', 'center', 100, 'getSearchableControl'));
+		$objectTable->addActionButton('updateCat', _SUBMIT, _CO_SOBJECT_UPDATE_ALL . ':');
 
 		$objectTable->render();
 

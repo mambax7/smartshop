@@ -1,9 +1,16 @@
-<{include file='db:smartshop_header.html'}>
+<script for=window event=onload language="javascript">
+  if (navigator.appVersion.indexOf("Mac",0)>0) {
+   }
+ else {
+
+  if (window.print)
+    setTimeout('window.print()',1000);
+    }
+</script>
+<{$header_print}>
 <div id="smartshop_item">
 	<div id="smartshop_item_title">
-		<{if $isAdmin}>
-			<{$item.editItemLink}><{$item.deleteItemLink}>
-		<{/if}>
+		
 		<{$item.name}>&nbsp;
 		<{if $status}>
 			(<{$status}>)
@@ -14,7 +21,6 @@
 		<div id="smartshop_item_body"><{$item.description}></div>
 	<{/if}>
 	<{if $item.image}>
-		<img src="<{$item.image}>"/>
 	<{/if}>
 	<table width="100%" border="0" cellspacing="0" cellpadding="0">
 		<tr>
@@ -59,7 +65,7 @@
 						<div><{$smarty.const._CO_SSHOP_PM}> : <{$item.poster.pmlink}></div>
 						<{if $item.poster.email}>
 							<div id="smartshop_courriel">
-								<{$smarty.const._CO_SSHOP_EMAIL}> : <a href="mailto:<{$item.poster.email}>"><{$item.poster.email}></a>
+								<{$smarty.const._CO_SSHOP_EMAIL}> : <{$item.poster.email}>
 							</div>
 						<{/if}>
 					<{/if}>
@@ -67,37 +73,6 @@
 			</td>
 		</tr>
 	</table>
-	<div id="smartshop_item_print_and_mail">
-<!--		<{$item.printAndMailLink}> //-->
-		<{if $can_edit}>
-			<{$autoEditLinks}>
-		<{/if}>
-		<{if $smartshop_module_use=='boutique' && !$in_basket  && $max_qty_basket}>
-			<div class="smartshow_buy_now">
-				<form action='<{$xoops_url}>/modules/smartshop/item.php' method='post'>
-				<{$smarty.const._MD_SSHOP_ADD}>
-				<{if $qty_opt}>	
-					<select name='quantity'>
-					<{$qty_opt}>
-					</select>
-				<{else}>
-					<input type='hidden' name='quantity' value='1'>	
-				<{/if}>
-				<{$smarty.const._MD_SSHOP_TO_BASKET}>
-				<input type='hidden' name='itemid' value='<{$item.itemid}>'>
-				<input type='submit' name='add_basket' value='<{$smarty.const._MD_SSHOP_SUBMIT}>'>
-				</form>
-			</div>
-		<{/if}>
-		<{if $message}>
-			<div class="smartshow_buy_now"><{$message}></div>
-		<{/if}>
-	</div>
-</div>
-<div><{$print_link}></div>
-<{if $include_search}>
-	<{include file="db:smartshop_search.html"}>
-<{/if}>
 
-<{include file='db:smartshop_footer.html'}>
-<{include file='db:system_notification_select.html'}>
+</div>
+<{$footer_print}>

@@ -1,0 +1,70 @@
+<div class="smartshop_items_list">
+	<{if $items}>
+		<div class="smartshop_pages_navbar"><{$itemnav}></div>
+		<div id="smartshop_item">
+			<{foreach item=item from=$items}>
+				<div id="smartshop_items_list_item">
+					<table border="1" cellspacing="0" cellpadding="0"class="smartshop_table_items">
+						<tr>
+							<{if $item.image}>
+					  			<td height="100" class="smartshop_items_image">
+					  				<{if $smartshop_module_use == 'adds'}>
+					  					<a href="<{$item.link_url}>" target="_blank"><img src="<{$item.image}>"</a>
+					  				<{elseif $smartshop_module_use=='boutique'}>
+					  					<a href="item.php?itemid=<{$item.itemid}>" alt="<{$item.name}>"><img src="<{$item.image}>"</a>
+					  				<{/if}>
+					  			</td>
+					  		<{/if}>
+					    	<td>
+								<div id="smartshop_items_name">
+									<{if $smartshop_module_use == 'adds'}>
+										<{$item.name}>
+									<{elseif $smartshop_module_use=='boutique'}>
+										<a href="item.php?itemid=<{$item.itemid}>"><{$item.name}></a>
+									<{/if}>
+								</div>
+								<{if $display.description}>
+									<div id="smartshop_items_description"><{$item.description}></div>
+								<{/if}>
+								<{foreach item=customField from=$customFields}> 
+									<{if $item[$customField.name] && $customField.summarydisp && $customField.display}>
+							  			<div><{$customField.caption}> : <{$item[$customField.name]}></div>
+							  		<{/if}>
+								<{/foreach}>
+								
+								<div id="smartshop_items_link_url"><{$item.external_link}></div>
+								<{if $for_sale && $display.price}>
+									<{$smarty.const._CO_SSHOP_ITEM_PRICE}> : <{$item.price}>
+								<{/if}>	
+								<{if $smartshop_module_use=='boutique' && $max_qty_basket}>
+									<{if $item.message}>
+										<{$item.message}>
+									<{else}>
+										<div>
+											<form action='<{$xoops_url}>/modules/smartshop/item.php' method='post'>
+											<{$smarty.const._MD_SSHOP_ADD}>
+											<{if $qty_opt}>	
+												<select name='quantity'>
+												<{$qty_opt}>
+												</select>
+											<{else}>
+												<input type='hidden' name='quantity' value='1'>	
+											<{/if}>
+											<{$smarty.const._MD_SSHOP_TO_BASKET}>
+											<input type='hidden' name='itemid' value='<{$item.itemid}>'>
+											<input type='hidden' name='back' value='1'>
+											<input type='submit' name='add_basket' value='<{$smarty.const._MD_SSHOP_SUBMIT}>'>
+											</form>
+										</div>
+									<{/if}>	
+								<{/if}>								
+		   				    </td>
+						</tr>
+				  </table>
+				</div>
+			<{/foreach}>
+		</div>
+		<{$category.self.pub}>
+		<div class="smartshop_pages_navbar"><{$itemnav}></div>
+	<{/if}>
+</div>

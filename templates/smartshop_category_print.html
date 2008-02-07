@@ -1,0 +1,80 @@
+<script for=window event=onload language="javascript">
+  if (navigator.appVersion.indexOf("Mac",0)>0) {
+   }
+ else {
+
+  if (window.print)
+    setTimeout('window.print()',1000);
+    }
+</script>
+
+<div><{$header_print}></div>
+	<div>
+		<!-- Start categories loop -->
+		<{foreach item=category from=$categories}>
+			<div class="smartshop_categoryname">
+				
+				<{$category.self.name}>
+			</div>
+			<div>
+				<{if $category.self.image}>
+					<img class="smartshop_category_image" src="<{$category.self.image}>" alt="<{$category.self.name}>" width="<{$category_list_image_width}>"/>
+				<{/if}>
+				<{$category.self.description}>
+			</div>
+			<div class="smartshop_category_header">
+				<{$category.self.header}>
+			</div>
+			<{if $category.sub}>
+				<div class="smartshop_subcats">
+					<div class="smartshop_subcats_info"><{$smarty.const._MD_SSHOP_SUBCATEGORIES}></div>
+			  		<{foreach name=loop item=subcat from=$category.sub}>
+			  			<{$subcat.self.itemLink}><{if $smarty.foreach.loop.iteration < $category.subcatscount}> -<{/if}>
+			  		<{/foreach}>
+			  	</div>
+		  	<{/if}>
+		<{/foreach}>
+		<!-- End categories loop -->
+	</div>
+
+<div class="smartshop_items_list">
+	<{if $items}>
+		<div id="smartshop_item">
+			<{foreach item=item from=$items}>
+				<div id="smartshop_items_list_item">
+					<table border="1" cellspacing="0" cellpadding="0"class="smartshop_table_items">
+						<tr>
+							<{if $item.image != ""}>
+					  			<td height="100" class="smartshop_items_image">
+					  				<img src="<{$item.image}>"/>
+					  			</td>
+					  		<{/if}>
+					    	<td>
+								<div id="smartshop_items_name">
+									<{$item.name}>
+								</div>
+								<{if $display.description}>
+									<div id="smartshop_items_description"><{$item.description}></div>
+								<{/if}>
+								<{foreach item=customField from=$customFields}> 
+									<{if $item[$customField.name] && $customField.summarydisp && $customField.display}>
+							  			<div><{$customField.caption}> : <{$item[$customField.name]}></div>
+							  		<{/if}>
+								<{/foreach}>
+								
+								<div id="smartshop_items_link_url"><{$item.external_link}></div>
+								<{if $for_sale && $display.price}>
+									<{$smarty.const._CO_SSHOP_ITEM_PRICE}> : <{$item.price}>
+								<{/if}>	
+														
+		   				    </td>
+						</tr>
+				  </table>
+				</div>
+			<{/foreach}>
+		</div>
+		<{$category.self.pub}>
+		
+	<{/if}>
+</div>
+<div><{$footer_print}></div>

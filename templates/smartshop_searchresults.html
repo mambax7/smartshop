@@ -3,24 +3,58 @@
 <{if $smartshop_search_results}>
 	<h2><{$lang_searchresultstitle}></h2>
 	<{$lang_searchresultstext}>
-
-		<{foreach item=theitem from=$items_array}>
-			<div class="smartshop_search_result">
-				<small>
-		  			<h2><a href="<{$smartshop_url}>item.php?itemid=<{$theitem.itemid}>"><{$theitem.name}></a></h2>
-	  				<{if $theitem.price &&  $display.price}>
-	  					<{$smarty.const._CO_SSHOP_ITEM_PRICE}>:&nbsp;<{$theitem.price}>$<br/>
-	  				<{/if}>
-	  				<{if $smartshop_module_use != 'boutique'}>
-	  				<{$smarty.const._CO_SSHOP_POSTER}>:&nbsp;<{$theitem.uid}><br/>
-	  				<{/if}>
-	  				<{if $display.description}>
-	  					<{$theitem.description}><br/>
-	  				<{/if}>
-		  		</small>
-			</div>
-		<br/>
-		<{/foreach}>
+		<{if $view_type == 'table_view'}>
+			<{include file="db:smartshop_table_view.html"}>
+		<{elseif $view_type == 'list_view'}>
+			<{include file="db:smartshop_list_view.html"}>
+		<{else}>
+			<!-- classic basic view-->
+			<div class="smartshop_pages_navbar"><{$itemnav}></div>
+			<{foreach item=theitem from=$items}>
+				<div class="smartshop_search_result">
+					<small>
+			  			<h2><a href="<{$smartshop_url}>item.php?itemid=<{$theitem.itemid}>"><{$theitem.name}></a></h2>
+		  				<{if $theitem.price &&  $display.price}>
+		  					<{$smarty.const._CO_SSHOP_ITEM_PRICE}>:&nbsp;<{$theitem.price}>$<br/>
+		  				<{/if}>
+		  				<{if $smartshop_module_use != 'boutique'}>
+		  				<{$smarty.const._CO_SSHOP_POSTER}>:&nbsp;<{$theitem.uid}><br/>
+		  				<{/if}>
+		  				<{if $display.description}>
+		  					<{$theitem.description}><br/>
+		  				<{/if}>
+			  		</small>
+			  		<{if $smartshop_module_use=='boutique'  && $max_qty_basket}>
+						<{if $theitem.message}>
+							<{$theitem.message}>
+						<{else}>
+							<div>
+								<form action='<{$xoops_url}>/modules/smartshop/item.php' method='post'>
+								<{$smarty.const._MD_SSHOP_ADD}>
+								<{if $qty_opt}>	
+									<select name='quantity'>
+									<{$qty_opt}>
+									</select>
+								<{else}>
+									<input type='hidden' name='quantity' value='1'>	
+								<{/if}>
+								<{$smarty.const._MD_SSHOP_TO_BASKET}>
+								<input type='hidden' name='back' value='1'>
+								<input type='hidden' name='itemid' value='<{$theitem.itemid}>'>
+								<input type='submit' name='add_basket' value='<{$smarty.const._MD_SSHOP_SUBMIT}>'>
+								</form>
+							</div>
+						<{/if}>	
+					<{/if}>	
+				</div>
+			<br/>
+			<{/foreach}>
+			<div class="smartshop_pages_navbar"><{$itemnav}></div>
+		<{/if}>
+		
+		
+		
+		
 <{/if}>
 
 <{include file="db:smartshop_search.html"}>

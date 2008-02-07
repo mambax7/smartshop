@@ -33,12 +33,9 @@ class SmartshopBasket_item extends SmartObject {
     }
 
 	function getQtyControl() {
+
 		$control = new XoopsFormText('', 'quantity_' . $this->id(), 2,3, $this->getVar('quantity'));
-		/*$qty_opt = array();
-		for($i=0;$i<51;$i++){
-			$qty_opt[$i] = $i;
-		}
-		$control->addOptionArray($qty_opt);*/
+
 		return $control->render();
     }
 

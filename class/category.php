@@ -40,6 +40,8 @@ class SmartshopCategory extends SmartObjectCategory {
 		$this->initVar('searchable', XOBJ_DTYPE_INT, true, false, null,'', false, _CO_SSHOP_CAT_SEARCHABLE, _CO_SSHOP_CAT_SEARCHABLE_DSC);
 		$this->setControl('searchable', "yesno");
 		$this->initVar('template', XOBJ_DTYPE_TXTBOX, true, false, null,'', false, _CO_SSHOP_CAT_TEMPLATE, _CO_SSHOP_CAT_TEMPLATE_DSC);
+		$this->initCommonVar('weight');
+
 		$this->setControl('template', array('name' => false,
                                           'itemHandler' => 'category',
                                           'method' => 'getTemplate',
@@ -98,6 +100,16 @@ class SmartshopCategory extends SmartObjectCategory {
     	$criteria->setSort('weight');
     	$category_attributObjs =& $smartshop_category_attribut_handler->getObjects($criteria);
     	return $category_attributObjs;
+    }
+
+    function getWeightControl() {
+		$control = new XoopsFormText('', 'weight_' . $this->id(), 5, 100, $this->getVar('weight'));
+		return $control->render();
+    }
+
+    function getSearchableControl() {
+		$control = new XoopsFormRadioYN('', 'searchable_' . $this->id(),  $this->getVar('searchable'));
+		return $control->render();
     }
 }
 
@@ -209,6 +221,19 @@ class SmartshopCategoryHandler extends SmartObjectCategoryHandler {
 		 */
 
 		return true;
+	}
+
+	function getAscendency($categoryid){
+		$categoriesArray = $this->getObjects(null, true, false);
+		$look_for = $categoriesArray[$categoryid]['parentid'];
+		$ascendency = array($categoryid , 0);
+
+		while ($look_for){
+			$ascendency[] = $look_for;
+			$look_for = $categoriesArray[$look_for]['parentid'];
+			$ascendency[] = $look_for;
+		}
+		return $ascendency;
 	}
 }
 ?>

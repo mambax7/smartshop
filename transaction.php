@@ -128,6 +128,7 @@ default:
 	}
 	$objectTable->addColumn(new SmartObjectColumn('quantity', 'center', 100, 'getQtyControl'));
 	$objectTable->addActionButton('updateBasket', _SUBMIT, _MD_SSHOP_SAVE_CHANGES);
+
 	$xoopsTpl->assign('table', $objectTable->fetch());
 	//custom version for AMI
 	if(in_array('price',$xoopsModuleConfig['display_fields'])){

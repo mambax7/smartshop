@@ -412,11 +412,6 @@ define("_AM_SSHOP_GLBL_ATTRIBUT_CREATE_INFO", "Fill the following form in order 
 define("_AM_SSHOP_GLBL_ATTRIBUT", "Global custom fields");
 define("_AM_SSHOP_GLBL_ATTRIBUT_DSC", "Here is a list of the custom fields that will be present for each item of the module.");
 
-define("_CO_SSHOP_CAT_ATT_CAPTION", "Caption");
-define("_CO_SSHOP_CAT_ATT_CAPTION_DSC", "Caption of this field in the item form.");
-
-define("_CO_SSHOP_CAT_ATTRIBUT_EDIT", "Custom field information");
-define("_CO_SSHOP_CAT_ATTRIBUT_EDIT_INFO", "Fill out this form in order to edit this custom field information.");
 
 
 define("_AM_SSHOP_LISTING_ITEMS", "Listing items");

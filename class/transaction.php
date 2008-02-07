@@ -185,7 +185,7 @@ class SmartshopTransaction extends SmartObject {
     	$constantVars = $this->vars;
     	$category_attributObjs =& $this->getCustomFields();
 
-    	global $smartshop_item_attribut_handler;
+    	global $smartshop_item_attribut_handler, $xoopsModuleConfig;
     	foreach ($category_attributObjs as $category_attributObj) {
     		/**
     		 * @todo Retreieving all item_attribut values should be done in a single query
@@ -243,7 +243,10 @@ class SmartshopTransaction extends SmartObject {
 		    			break;
 
 		    		case 'tarea' :
-						$this->setControl($category_attributObj->getVar('name'), "textarea");
+						$this->setControl($category_attributObj->getVar('name'), array('name' => 'textarea',
+																				   'cols' => $xoopsModuleConfig['txtarea_width'],
+																				   'rows' => $xoopsModuleConfig['txtarea_height']));
+
 		    			break;
 
 					case 'yn' :

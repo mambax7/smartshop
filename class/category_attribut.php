@@ -74,6 +74,8 @@ class SmartshopCategory_attribut extends SmartObject {
         $this->setControl('searchable', "yesno");
         $this->setControl('display', "yesno");
         $this->setControl('summarydisp', "yesno");
+        $this->setControl('searchdisp', "yesno");
+        $this->setControl('checkoutdisp', "yesno");
         //$this->setControl('unicity', array('name' => "yesno", 'js' => '$smartshop_item_attribut_handler->getJsForUnique($key)'));
         $this->setControl('unicity', "yesno");
         $this->setControl('att_default', array('name' => 'textarea',
@@ -164,7 +166,7 @@ class SmartshopCategory_attribut extends SmartObject {
     			break;
 
 			case 'image' :
-    			return XOBJ_DTYPE_TXTBOX;
+    			return XOBJ_DTYPE_IMAGE;
     			break;
 
     		default:
@@ -185,11 +187,17 @@ class SmartshopCategory_attribut extends SmartObject {
     	return $ret;
     	**/
     	global $smartshop_attribut_option_handler;
+    	if(!isset($smartshop_attribut_option_handler)){
+			$smartshop_attribut_option_handler =& xoops_getmodulehandler('attribut_option', 'smartshop');
+		}
     	return $smartshop_attribut_option_handler->getOptionsByAttribut($this->getVar('attributid', 'n'));
     }
 
 	function getJsForUnique(){
     	global $smartshop_item_attribut_handler;
+    	if(!isset($smartshop_item_attribut_handler)){
+			$smartshop_item_attribut_handler =& xoops_getmodulehandler('item_attribut', 'smartshop');
+		}
     	$js = '';
     	if($this->getVar('unicity') == 1){
 	    	$values = $smartshop_item_attribut_handler->getExistingValues($this->getVar('attributid', 'n'));

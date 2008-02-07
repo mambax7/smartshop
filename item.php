@@ -9,7 +9,7 @@
 
 include_once("header.php");
 
-global $smartshop_category_handler, $smartshop_item_handler, $xoopsUser;
+global $smartshop_category_handler, $smartshop_item_handler, $xoopsUser, $smart_previous_page;;
 
 $itemid = isset($_REQUEST['itemid']) ? intval($_REQUEST['itemid']) : 0;
 
@@ -39,12 +39,24 @@ if (!$categoryObj->accessGranted('category_view')) {
  if($smartshop_module_use == 'boutique' && isset($_REQUEST['quantity'])){
 	$basket = $smartshop_basket_handler->get();
 	$basket->add($itemid, $_REQUEST['quantity']);
-	redirect_header('category.php?categoryid='.$categoryid, 3, sprintf(_MD_SSHOP_ADDED_TO_BASKET,$_REQUEST['quantity'], $itemObj->getVar('name')));
+	if(isset($_REQUEST['back'])){
+		redirect_header($smart_previous_page, 3, sprintf(_MD_SSHOP_ADDED_TO_BASKET,$_REQUEST['quantity'], $itemObj->getVar('name')));
+	}else{
+		redirect_header('category.php?categoryid='.$categoryid, 3, sprintf(_MD_SSHOP_ADDED_TO_BASKET,$_REQUEST['quantity'], $itemObj->getVar('name')));
+	}
 }
 
+if(isset($_GET['print'])){
+	require_once XOOPS_ROOT_PATH.'/class/template.php';
+	$xoopsTpl = new XoopsTpl();
+	$xoopsTpl->assign('footer_print', $xoopsModuleConfig['footer_print']);
+	$xoopsTpl->assign('header_print', $xoopsModuleConfig['header_print']);
 
-$xoopsOption['template_main'] = 'smartshop_item.html';
-include_once(XOOPS_ROOT_PATH . "/header.php");
+}else{
+	$xoopsOption['template_main'] = 'smartshop_item.html';
+	include_once(XOOPS_ROOT_PATH . "/header.php");
+}
+
 $xoopsTpl->assign('cat_nav', $xoopsModuleConfig['category_nav']);
 $xoopsTpl->assign('nav_mode', $xoopsModuleConfig['nav_mode']);
 
@@ -113,16 +125,23 @@ if($smartshop_module_use == 'boutique'){
 	$basketItemArray =$basket->getItems(1);
 	$in_basket = (isset($basketItemArray[$itemid]) && intval($basketItemArray[$itemid]['quantity']) > 0);
 	if($in_basket){
-		$xoopsTpl->assign('message', sprintf(_MD_SSHOP_ALREADY_IN_BASKET, $basketItemArray[$itemid]['quantity']));
-	}else{
-		//TODO : put max item qty in prefs
-		for($i=1;$i<51;$i++){
-			$qty_opt .= "<option value='".$i."'>".$i."</option>";
+		if($xoopsModuleConfig['max_qty_basket'] > 1  && $xoopsModuleConfig['max_qty_basket']){
+			$xoopsTpl->assign('message', sprintf(_MD_SSHOP_ALREADY_IN_BASKET, $basketItemArray[$itemid]['quantity']));
+		}else{
+			$xoopsTpl->assign('message', _MD_SSHOP_ALREADY_IN_BASKET1);
 		}
-		$xoopsTpl->assign('qty_opt', $qty_opt);
+	}else{
+		if($xoopsModuleConfig['max_qty_basket'] > 1){
+			for($i=1;$i<=intval($xoopsModuleConfig['max_qty_basket']);$i++){
+				$qty_opt .= "<option value='".$i."'>".$i."</option>";
+			}
+			$xoopsTpl->assign('qty_opt', $qty_opt);
+		}
+
 	}
 
 	$xoopsTpl->assign('in_basket', $in_basket);
+	$xoopsTpl->assign('max_qty_basket', $xoopsModuleConfig['max_qty_basket']);
 }
 
 /**
@@ -130,11 +149,21 @@ if($smartshop_module_use == 'boutique'){
  */
 $smartshop_metagen = new SmartMetagen($itemObj->getVar('name'), $itemObj->getVar('meta_keywords'), $itemObj->getVar('meta_description'), $categoryPath);
 $smartshop_metagen->createMetaTags();
+if(isset($_GET['print'])){
+	$xoopsTpl->display('db:smartshop_item_print.html');
+}else{
+	if (!isset($xoops_urls)) {
+		include_once XOOPS_ROOT_PATH.'/modules/smartobject/include/functions.php';
+		$xoops_urls = smart_getCurrentUrls();
+	}
+	$url = $xoops_urls['full'];
+	$xoopsTpl->assign('print_link', "<a href='".$url."&print'><img src='".XOOPS_URL."/modules/smartobject/images/print.gif'></a>");
 
-if ($xoopsModuleConfig['include_search']) {
-	include_once(SMARTSHOP_ROOT_PATH . "include/searchform.php");
+	if ($xoopsModuleConfig['include_search']) {
+		include_once(SMARTSHOP_ROOT_PATH . "include/searchform.php");
+	}
+	include_once(XOOPS_ROOT_PATH . '/footer.php');
 }
 
-include_once(XOOPS_ROOT_PATH . "/footer.php");
 
 ?>

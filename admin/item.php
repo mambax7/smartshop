@@ -130,6 +130,7 @@ switch ($op) {
         	redirect_header($smart_previous_page, 3, _CO_SOBJECT_SAVE_ERROR . $itemObj->getHtmlErrors());
         	exit;
         }
+
         // no errors, we are good to go to save the custom fields
         $customFieldsObj =& $itemObj->getCustomFields();
         foreach($customFieldsObj as $customField) {
@@ -138,12 +139,11 @@ switch ($op) {
         		$item_attributObj->setVar('attributid', $customField->getVar('attributid'));
         		$item_attributObj->setVar('itemid', $itemObj->getVar('itemid'));
         	}
-       		if(($customField->getVar('att_type', 'n') == 'file'
-       				&& isset($_FILES['upload_'.$customField->getVar('name')]['name']) && $_FILES['upload_'.$customField->getVar('name')]['name'] != '')
-       			|| $customField->getVar('att_type', 'n') == 'image'){
+       		if(($customField->getVar('att_type', 'n') == 'file' || $customField->getVar('att_type', 'n') == 'image')
+       				&& isset($_FILES['upload_'.$customField->getVar('name')]['name']) && $_FILES['upload_'.$customField->getVar('name')]['name'] != ''){
         		$item_attributObj->doUpload($itemObj);
 
-        	}elseif($customField->getVar('att_type', 'n') == 'file' || $customField->getVar('att_type', 'n') == 'urllink'){
+        	}elseif($customField->getVar('att_type', 'n') == 'file' || $customField->getVar('att_type', 'n') == 'urllink'|| $customField->getVar('att_type', 'n') == 'image'){
        			$item_attributObj->storeBasedURl($customField->getVar('att_type', 'n'));
        		}else{
 				$item_attributObj->setType('value', $customField->getObjectType());

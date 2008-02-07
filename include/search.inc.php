@@ -13,7 +13,7 @@ if (!defined("XOOPS_ROOT_PATH")) {
 function smartshop_search($queryarray, $andor, $limit, $offset, $userid)
 {
 	include_once XOOPS_ROOT_PATH.'/modules/smartshop/include/common.php';
-
+	ini_set('memory_limit','64M');
 	$ret = array();
 
 	if (!isset($smartshop_item_handler)) {
@@ -31,7 +31,7 @@ function smartshop_search($queryarray, $andor, $limit, $offset, $userid)
 	$itemsObj =& $smartshop_item_handler->getItemsFromSearch($queryarray, $andor, $limit, $offset, $userid);
 
 	foreach ($itemsObj as $result) {
-		
+
 		$item['image'] = "images/item_icon.gif";
 		$item['link'] = "item.php?itemid=" . $result['id'] . $hightlight_key;
 		$item['title'] = "" . $result['title'];

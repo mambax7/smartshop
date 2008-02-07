@@ -9,7 +9,11 @@
 function editcategory_attribut($showmenu = false, $categoryid, $attributid = 0)
 {
 	global $smartshop_category_attribut_handler, $smartshop_category_handler, $smartshop_item_handler, $smartshop_attribut_option_handler;
+
 	$category_attributObj = $smartshop_category_attribut_handler->get($attributid);
+	if(!$category_attributObj->isNew() && $categoryid == 0){
+		$categoryid = $category_attributObj->getVar('parentid', 'e');
+	}
 	$category_attributObj->hideFieldFromForm(array('options', 'dependent_attributid', 'size'));
 	if((isset($_POST['att_type']) && $_POST['att_type'] == 'select_multi' ) || $category_attributObj->getVar('att_type', 'n') == 'select_multi' ){
 		$category_attributObj->showFieldOnForm('size');
@@ -104,7 +108,7 @@ function editcategory_attribut($showmenu = false, $categoryid, $attributid = 0)
 	    	$info = _AM_SSHOP_TRANS_ATTRIBUT_CREATE_INFO;
 	    	$collaps_name = 'category_attributcreate';
 	    	$form_name = _AM_SSHOP_TRANS_ATTRIBUT_CREATE;
-	    	$category_attributObj->hideFieldFromForm(array('sortable', 'searchable', 'summarydisp', 'searchdisp', 'unicity', 'custom_rendering', 'display', 'dependent_attributid'));
+	    	$category_attributObj->hideFieldFromForm(array('sortable', 'checkoutdisp' , 'searchable', 'summarydisp', 'searchdisp', 'unicity', 'custom_rendering', 'display', 'dependent_attributid'));
 		   	if ($showmenu) {
 		        smart_adminMenu(3, $breadcrumb);
 		    }
@@ -121,12 +125,18 @@ function editcategory_attribut($showmenu = false, $categoryid, $attributid = 0)
     	}
 
     } else {
+    	if($categoryid == -1){
+    		$category_attributObj->hideFieldFromForm(array('sortable',  'checkoutdisp' ,'searchable', 'summarydisp', 'searchdisp', 'unicity', 'custom_rendering', 'display', 'dependent_attributid'));
+		}
     	$breadcrumb = _AM_SSHOP_CATEGORIES . " > " . _AM_SSHOP_CAT_ATTRIBUT . " > " . _AM_SSHOP_EDITING;
     	$title = _CO_SSHOP_CAT_ATTRIBUT_EDIT;
     	$info = _CO_SSHOP_CAT_ATTRIBUT_EDIT_INFO;
     	$collaps_name = 'category_attributedit';
     	$form_name = _CO_SSHOP_CAT_ATTRIBUT_EDIT;
     	$categoryid = $category_attributObj->getVar('parentid');
+    	if ($showmenu) {
+	        smart_adminMenu(0, $breadcrumb);
+	    }
     }
     $category_attributObj->setVar('parentid', $categoryid);
 
@@ -278,7 +288,7 @@ switch ($op) {
 			$attributobj->setVar('summarydisp', isset($_POST['summarydisp_' . $attributid]) ? intval($_POST['summarydisp_' . $attributid]) : 0);
 			$attributobj->setVar('checkoutdisp', isset($_POST['checkoutdisp' . $attributid]) ? intval($_POST['checkoutdisp' . $attributid]) : 0);
 
-			$smartshop_category_attribut_handler->insert($attributobj);
+			$smartshop_category_attribut_handler->insert($attributobj, true);
 		}
 
 		redirect_header($smart_previous_page, 3, _CO_SOBJECT_NO_RECORDS_UPDATED);

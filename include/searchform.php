@@ -6,7 +6,7 @@ if (!defined("XOOPS_ROOT_PATH")) {
 include_once XOOPS_ROOT_PATH . "/class/xoopstree.php";
 include_once XOOPS_ROOT_PATH . "/class/xoopslists.php";
 include_once XOOPS_ROOT_PATH . "/class/xoopsformloader.php";
-
+include_once XOOPS_ROOT_PATH . "/modules/smartshop/class/smartshoptree.php";
 if(!isset($categoryid)) $categoryid = 0;
 
 $sform = new XoopsThemeForm(_MD_SSHOP_SEARCH , "form", XOOPS_URL."/modules/smartshop/search.php", 'POST');
@@ -30,14 +30,23 @@ $categoriesArray=$newArray;
 
 if($xoopsModuleConfig['cat_inputtype_search'] == 'radio'){
 	$category_select = new XoopsFormRadio(_MD_SSHOP_CATEGORY, 'categoryid', $categoryid);
+	$category_select->setDescription(_MD_SSHOP_CATEGORY_DSC);
+	$category_select->addOption(0, _MD_SSHOP_SEARCH_ALL);
+	$category_select->addOptionArray($categoriesArray);
+	$category_select->setExtra("onchange='submit()'");
+	$sform->addElement($category_select);
 }else{
-	$category_select = new XoopsFormSelect(_MD_SSHOP_CATEGORY, 'categoryid', $categoryid);
+	// Parent Category
+	$mytree = new SmartshopTree( $xoopsDB -> prefix( "smartshop_category" ), "categoryid", "parentid" );
+	ob_start();
+	$mytree -> makeMySelBox( "name", "weight", $categoryid, 1, 'categoryid' , 'submit()', 1, $grantedCats);
+
+	//makeMySelBox($title,$order="",$preset_id=0, $none=0, $sel_name="", $onchange="")
+	$sform -> addElement( new XoopsFormLabel( _MD_SSHOP_CATEGORY, ob_get_contents() ) );
+	ob_end_clean();
+
 }
-$category_select->setDescription(_MD_SSHOP_CATEGORY_DSC);
-$category_select->addOption(0, _MD_SSHOP_SEARCH_ALL);
-$category_select->addOptionArray($categoriesArray);
-$category_select->setExtra("onchange='submit()'");
-$sform->addElement($category_select);
+
 
 // ITEM TITLE
 $title_text = new XoopsFormText(_MD_SSHOP_TITLE, 'title', 30, 255, $title);
@@ -53,8 +62,10 @@ if(in_array('description', $xoopsModuleConfig['display_fields'])){
 
 
 
+$ascendency = $smartshop_category_handler->getAscendency($categoryid);
+
 $criteria = new CriteriaCompo();
-$criteria->add(new Criteria('parentid', '('.$categoryid.', 0)', 'IN'));
+$criteria->add(new Criteria('parentid', '('.implode($ascendency, ', ').')', 'IN'));
 $criteria->add(new Criteria('searchable', 1));
 $criteria->setSort('weight');
 $criteria->setOrder('ASC');
@@ -140,6 +151,9 @@ $button_tray->addElement($hidden);
 $butt_search = new XoopsFormButton('', 'post', _MD_SSHOP_SEARCH, 'submit');
 $butt_search->setExtra('onclick="this.form.elements.op.value=\'post\'"');
 $button_tray->addElement($butt_search);
+
+$butt_clear = new XoopsFormButton('', '', _MD_SSHOP_RESET, 'reset');
+$button_tray->addElement($butt_clear);
 
 $sform->addElement($button_tray);
 

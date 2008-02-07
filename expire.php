@@ -6,9 +6,14 @@ if(!isset($xoopsModuleConfig)){
     $xoopsModule =& $modhandler->getByDirname('smartshop');
 	$xoopsModuleConfig =& $config_handler->getConfigsByCat(0, $xoopsModule->getVar('mid'));
 }
+global $smartshop_module_use;
+if(!isset($smartshop_module_use)){
+	 include_once('include/functions.php');
+	$smartshop_module_use = smartshop_GetMeta('module_usage');
 
+}
 //On execute ce script si la config 'exp_manageby_cron' est à false et nous sommes dans xoops
-if(!$xoopsModuleConfig['exp_manageby_cron']){
+if(!$xoopsModuleConfig['exp_manageby_cron'] && ($smartshop_module_use == 'dynamic_directory' ||$smartshop_module_use == 'adds')){
 	$xoopsDB =& Database::getInstance();
 
 	//vérification du dernier check

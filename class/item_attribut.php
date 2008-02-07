@@ -107,6 +107,7 @@ class SmartshopItem_attribut extends SmartObject {
     	$category_attributObj = $smartshop_category_attribut_handler->get($this->getVar('attributid'));
 		$key = $category_attributObj->getVar('name');
 
+
     	if($data_type == 'file' && $_POST['url_'.$key]) {
 	    	$fileObj = $this->getFileObj('value');
 	    	$fileObj->setVar('url', $_POST['url_'.$key]);
@@ -115,6 +116,20 @@ class SmartshopItem_attribut extends SmartObject {
 			$this->storeFileObj(&$fileObj);
 			//todo : catch errors
 			$this->setVar('value', $fileObj->getVar('fileid'));
+    	}elseif($data_type == 'image'){
+			$oldFile = $smartshop_item_handler->getImagePath(true).$this->getVar('value', 'e');
+			if(isset($_POST['delete_'.$key]) && $_POST['delete_'.$key] == '1'){
+				$this->setVar('value', '');
+				if(file_exists($oldFile)){
+    				unlink($oldFile);
+    			}
+			}elseif(isset($_POST['url_'.$key]) && $_POST['url_'.$key] != ''){
+				$this->setVar('value', $_POST['url_'.$key]);
+				if(file_exists($oldFile)){
+    				unlink($oldFile);
+    			}
+			}
+
     	}else{
     		$linkObj = $this->getUrlLinkObj('value');
 			$linkObj->setVar('caption', $_POST['caption_'.$key]);

@@ -98,9 +98,11 @@ define("_MI_SSHOP_DEF_ITEM_PIC", "Default item picture");
 define("_MI_SSHOP_DEF_ITEM_PIC_DSC", "Image that will be shown in item information, in the case that it has no picture. Must be in folder smartshop/images. Leave blank to don't show default picture.");
 define("_MI_SSHOPSUBMIT_INTRO", "Introduction of item sumission page");
 define("_MI_SSHOP_SORT", "Sort items by:");
+define("_MI_SSHOP_CAT_SORT", "Sort categories by:");
 define("_MI_SSHOP_SORT_DSC", "");
 define("_MI_SSHOP_SORT_WEIGHT", "Weight");
 define("_MI_SSHOP_SORT_DATE", "Date");
+define("_MI_SSHOP_SORT_ALPHA", "Alpha");
 define("_MI_SSHOP_DISP_FIELDS", "Fields to display");
 define("_MI_SSHOP_DISP_FIELDS_DSC", "Visible fields (doesn't applies on custom fields)");
 define("_MI_SSHOP_DISP_FIELDS_LINK", "External link");
@@ -143,5 +145,14 @@ define("_MI_SSHOP_EXTRA_EMAILS", "Send order emails to addresses");
 define("_MI_SSHOP_EXTRA_EMAILS_DSC", "Enter email addresses separated by ';'");
 define("MI_SSHOP_SIGNATURE", "Signature");
 define("_MI_SSHOP_SIGNATURE_DSC", "Signatue for the order confirmation email that will receive users.");
-
+define("_MI_SSHOP_HEADER_PRINT", "Header for print page");
+define("_MI_SSHOP_HEADER_PRINT_DSC", "");
+define("_MI_SSHOP_FOOTER_PRINT", "footer for print page");
+define("_MI_SSHOP_FOOTER_PRINT_DSC", "");
+define("_MI_SSHOP_MAX_QTY_BASKET", "Max quantity to add in the basket");
+define("_MI_SSHOP_MAX_QTY_BASKET_DSC", "Put '1' to not show quantity. Put '0' to disable 'Add to cart' buttons. Numeric values only.");
+define("_MI_SSHOP_TAREA_WIDTH", "# columns for Text areas");
+define("_MI_SSHOP_TAREA_WIDTH_DSC", "");
+define("_MI_SSHOP_TAREA_HEIGHT", "# rows for Text areas");
+define("_MI_SSHOP_TAREA_HEIGHT_DSC", "");
 ?>

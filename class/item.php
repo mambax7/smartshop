@@ -77,7 +77,7 @@ class SmartshopItem extends SmartSeoObject {
                                           'method' => 'getStatus',
                                           'module' => 'smartshop'));
 
-		$this->initVar('image', XOBJ_DTYPE_TXTBOX, '', false, null, '',  false, _CO_SSHOP_ITEM_IMAGE, sprintf(_CO_SSHOP_ITEM_IMAGE_DSC, $smartShopConfig['img_max_width'], $smartShopConfig['img_max_height'], $smartShopConfig['maximum_imagesize']));
+		$this->initVar('image', XOBJ_DTYPE_IMAGE, '', false, null, '',  false, _CO_SSHOP_ITEM_IMAGE, sprintf(_CO_SSHOP_ITEM_IMAGE_DSC, $smartShopConfig['img_max_width'], $smartShopConfig['img_max_height'], $smartShopConfig['maximum_imagesize']));
 		$this->setControl('image', array('name' => 'image'));
 
         $this->initCommonVar('counter', false);
@@ -111,7 +111,8 @@ class SmartshopItem extends SmartSeoObject {
     	global $xoopsModuleConfig, $smartshop_category_attribut_handler;
     	$objectArray = parent::toArray();
 
-    	if ($objectArray['image'] != -1) {
+    	if ($objectArray['image'] != -1 && $objectArray['image'] != '') {
+    		$objectArray['image'] = str_replace('{XOOPS_URL}', XOOPS_URL, $objectArray['image']);
     		if(substr($objectArray['image'], 0,4 ) == 'http'){
     			$objectArray['image'] = $objectArray['image'];
     		}else{
@@ -123,8 +124,7 @@ class SmartshopItem extends SmartSeoObject {
     	}
     	else{
     		$objectArray['image'] = SMARTSHOP_URL."images/".$xoopsModuleConfig['def_item_pic'];
-    	}
-    	if($from_search){
+    	}if($from_search){
     		if (strlen($objectArray['description']) >= 100) {
                     $objectArray['description'] = smartshop_substr($objectArray['description'] , 0, 100);
                 }
@@ -187,6 +187,19 @@ class SmartshopItem extends SmartSeoObject {
     		}
     	}
 
+		include_once(SMARTOBJECT_ROOT_PATH . 'class/smarthighlighter.php');
+		$highlight = smart_getConfig('module_search_highlighter', false, true);
+
+		if($highlight && isset($_GET['keywords']))
+		{
+			$myts =& MyTextSanitizer::getInstance();
+			$keywords=$myts->htmlSpecialChars(trim(urldecode($_GET['keywords'])));
+			$h= new SmartHighlighter ($keywords, true , 'smart_highlighter');
+			foreach($this-> getVarInfo() as $field=>$value) {
+				$objectArray[$field] = $h->highlight($objectArray[$field]);
+			}
+		}
+
     	return $objectArray;
     }
 
@@ -196,7 +209,10 @@ class SmartshopItem extends SmartSeoObject {
     	$constantVars = $this->vars;
     	$category_attributObjs =& $this->getCustomFields();
 
-    	global $smartshop_item_attribut_handler;
+    	global $smartshop_item_attribut_handler, $xoopsModuleConfig;
+    	if(!isset($smartshop_item_attribut_handler)){
+			$smartshop_item_attribut_handler =& xoops_getmodulehandler('item_attribut', 'smartshop');
+		}
     	foreach ($category_attributObjs as $category_attributObj) {
     		/**
     		 * @todo Retreieving all item_attribut values should be done in a single query
@@ -249,7 +265,11 @@ class SmartshopItem extends SmartSeoObject {
 	    			break;
 
 	    		case 'tarea' :
-					$this->setControl($category_attributObj->getVar('name'), "textarea");
+					$this->setControl($category_attributObj->getVar('name'), array('name' => 'textarea',
+																				   'cols' => $xoopsModuleConfig['txtarea_width'],
+																				   'rows' => $xoopsModuleConfig['txtarea_height']));
+
+
 	    			break;
 
 				case 'yn' :
@@ -300,7 +320,11 @@ class SmartshopItem extends SmartSeoObject {
     function getCustomFields()
     {
     	global $smartshop_category_attribut_handler, $smartshop_category_handler;
+		if(!isset($smartshop_category_handler)){
+			$smartshop_category_handler =& xoops_getmodulehandler('category', 'smartshop');
+			$smartshop_category_attribut_handler =& xoops_getmodulehandler('category_attribut', 'smartshop');
 
+		}
     	$criteria = new CriteriaCompo();
     	$criteria->add(new Criteria('parentid', '( 0, ' . $smartshop_category_handler->getParentIds($this->getVar('parentid')) . ')', 'IN'));
     	$criteria->setSort('weight');
@@ -474,6 +498,14 @@ class SmartshopItem extends SmartSeoObject {
     	return $status_select->render();
     }
 
+    /*function getForm($form_caption, $form_name, $form_action=false, $submit_button_caption = _CO_SOBJECT_SUBMIT, $cancel_js_action=false, $captcha=false)
+    {
+        include_once SMARTSHOP_ROOT_PATH . "class/form/smartshopform.php";
+        $form = new SmartShopForm($this, $form_name, $form_caption, $form_action, null, $submit_button_caption, $cancel_js_action, $captcha);
+
+        return $form;
+    }*/
+
 }
 
 class SmartshopItemHandler extends SmartPersistableObjectHandler {
@@ -642,8 +674,10 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
  		}
 
 		$ret = false;
+		/*$sql .= ' ORDER BY '.$criteria->getSort().' '.$criteria->getOrder();
+		$limit = $criteria->getLimit();
+        $start = $criteria->getStart();*/
 		$limit = $start = 0;
-
 		//echo "<br />" . $sql . "<br />";exit;
 
 		$result = $this->db->query($sql, $limit, $start);
@@ -670,53 +704,67 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 
 	function getItemsFromSearch($queryarray = array(), $andor = 'AND', $limit = 0, $offset = 0, $userid = 0)
 	{
-
 	$ret = array();
 
+	$sql = "SELECT * FROM ".$this->db->prefix('smartshop_item')." WHERE itemid IN (
+			SELECT DISTINCT ".$this->db->prefix('smartshop_item.itemid')." FROM ".$this->db->prefix('smartshop_item').",  ".
+			$this->db->prefix('smartshop_item_attribut').",  ".$this->db->prefix('smartshop_attribut_option')."
+			WHERE ".$this->db->prefix('smartshop_item.itemid')." = ".$this->db->prefix('smartshop_item_attribut.itemid')."
+			AND  ".$this->db->prefix('smartshop_item_attribut.attributid')." =  ".$this->db->prefix('smartshop_attribut_option.attributid')."
+			AND  ".$this->db->prefix('smartshop_item_attribut.value')." =  ".$this->db->prefix('smartshop_attribut_option.optionid')." ";
+	$sql .= " AND status = "._SSHOP_STATUS_ONLINE;
 	if ($userid != 0) {
-		$criteriaUser = new CriteriaCompo();
-		$criteriaUser->add(new Criteria('uid', $userid), 'OR');
+		$sql .= " AND uid = ".$userid;
 	}
 
 	if ($queryarray) {
-		$criteriaKeywords = new CriteriaCompo();
+		$sql .= " AND (";
 		for ($i = 0; $i < count($queryarray); $i++) {
-			$criteriaKeyword = new CriteriaCompo();
-			$criteriaKeyword->add(new Criteria('name', '%' . $queryarray[$i] . '%', 'LIKE'), 'OR');
-			$criteriaKeyword->add(new Criteria('description', '%' . $queryarray[$i] . '%', 'LIKE'), 'OR');
-			$criteriaKeywords->add($criteriaKeyword, $andor);
-			unset($criteriaKeyword);
+			$sql .= " ( name LIKE '%" . $queryarray[$i] . "%' OR ";
+			$sql .= " description LIKE '%" . $queryarray[$i] . "%' OR ";
+			$sql .= " ".$this->db->prefix('smartshop_attribut_option.caption')." LIKE '%" . $queryarray[$i] . "%') ";
+			//$sql .= " ".$this->db->prefix('smartshop_item_attribut.value')." LIKE '%" . $queryarray[$i] . "%' ) ";
+
+			if($i < (count($queryarray) -1)){
+				$sql .= $andor;
+			}
 		}
+		$sql .= " )) OR itemid IN ( SELECT DISTINCT xoops_smartshop_item.itemid FROM xoops_smartshop_item, xoops_smartshop_item_attribut
+			WHERE xoops_smartshop_item.itemid = xoops_smartshop_item_attribut.itemid
+			AND status = "._SSHOP_STATUS_ONLINE." AND (";
+
+		for ($i = 0; $i < count($queryarray); $i++) {
+			$sql .= " ".$this->db->prefix('smartshop_item_attribut.value')." LIKE '%" . $queryarray[$i] . "%'  ";
+			if($i < (count($queryarray) -1)){
+				$sql .= 'OR';
+			}
+		}
+
+
+
 	}
+	$sql .= " ))";
 
-	$criteriaItemsStatus = new CriteriaCompo();
-	$criteriaItemsStatus->add(new Criteria('status', _SSHOP_STATUS_ONLINE));
-
-	$criteria = new CriteriaCompo();
-	if (!empty($criteriaUser)) {
-		$criteria->add($criteriaUser, 'AND');
-	}
-
-	if (!empty($criteriaKeywords)) {
-		$criteria->add($criteriaKeywords, 'AND');
-	}
-
-	if (!empty($criteriaItemsStatus)) {
-		$criteria->add($criteriaItemsStatus, 'AND');
-	}
-
-	$criteria->setLimit($limit);
-	$criteria->setStart($offset);
-	$criteria->setSort('date');
-	$criteria->setOrder('DESC');
-
-	$itemsObj = $this->getObjects($criteria);
-
-	//echo "<br />" . $sql . "<br />";
-
-	if (count($itemsObj) == 0) {
+	$result = $this->db->query($sql, $limit, $offset);
+	if (!$result) {
+		echo "Please please copy the query below and contact the administrator about this problem. Thank you.<br><br>".$sql;
+		exit;
 		return $ret;
 	}
+
+	if (count($result) == 0) {
+		return $ret;
+	}
+
+
+	while ($myrow = $this->db->fetchArray($result)) {
+		$item = new SmartshopItem();
+		$item->assignVars($myrow);
+		$item->initiateCustomFields();
+		$itemsObj[] =& $item;
+		unset($item);
+	}
+
 
 	$smartshop_category_handler =& smartshop_gethandler('category');
 	$categoriesObj = $smartshop_category_handler->getObjects();

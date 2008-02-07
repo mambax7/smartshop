@@ -12,8 +12,9 @@ include_once(XOOPS_ROOT_PATH . '/header.php');
 $xoopsOption['template_main'] = 'smartshop_index.html';
 include_once(XOOPS_ROOT_PATH . "/header.php");
 include_once("footer.php");
+$sort = $xoopsModuleConfig['cat_sort'] = 'weight';
 
-$xoopsTpl->assign('categories', $smartshop_category_handler->getAllCategoriesArray(0, 'category_view'));
+$xoopsTpl->assign('categories', $smartshop_category_handler->getAllCategoriesArray(0, 'category_view', $sort));
 $xoopsTpl->assign('module_home', smart_getModuleName(false, true));
 $xoopsTpl->assign('index_item', true);
 $xoopsTpl->assign('cat_nav', $xoopsModuleConfig['category_nav']);
@@ -21,11 +22,11 @@ $xoopsTpl->assign('index', true);
 /**
  * Get all orphan items items
  */
-$criteria = new CriteriaCompo();
+/*$criteria = new CriteriaCompo();
 $criteria->add(new Criteria('parentid', 0));
 $criteria->add(new Criteria('status', _SSHOP_STATUS_ONLINE));
 $aItems = $smartshop_item_handler->getObjects($criteria, true, false);
-$xoopsTpl->assign('items', $aItems);
+$xoopsTpl->assign('items', $aItems);*/
 
 /**
  * Generating meta information for this item
@@ -33,7 +34,7 @@ $xoopsTpl->assign('items', $aItems);
 $smartshop_metagen = new SmartMetagen($smartshop_moduleName);
 $smartshop_metagen->createMetaTags();
 
-if ($xoopsModuleConfig['include_search']) {
+if ($xoopsModuleConfig['include_search'] ) {
 	include_once(SMARTSHOP_ROOT_PATH . "include/searchform.php");
 }
 include_once(XOOPS_ROOT_PATH . '/footer.php');

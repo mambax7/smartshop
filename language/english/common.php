@@ -144,6 +144,11 @@ define("_CO_SSHOP_TRANS_CURRENCY", "Currency");
 define("_CO_SSHOP_TRANS_CURRENCY_DSC", "");
 define("_CO_SSHOP_TRANS_QUANTITY", "Quantity");
 define("_CO_SSHOP_TRANS_QUANTITY_DSC", "");
+define("_CO_SSHOP_CAT_ATT_CAPTION", "Caption");
+define("_CO_SSHOP_CAT_ATT_CAPTION_DSC", "Caption of this field in the item form.");
+
+define("_CO_SSHOP_CAT_ATTRIBUT_EDIT", "Custom field information");
+define("_CO_SSHOP_CAT_ATTRIBUT_EDIT_INFO", "Fill out this form in order to edit this custom field information.");
 
 define("_CO_SSHOP_TRANS_UNAME", "Username");
 define("_CO_SSHOP_TRANS_VENDOR_ADP", "Vendor ADP");

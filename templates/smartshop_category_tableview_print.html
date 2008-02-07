@@ -1,0 +1,103 @@
+<script for=window event=onload language="javascript">
+  if (navigator.appVersion.indexOf("Mac",0)>0) {
+   }
+ else {
+
+  if (window.print)
+    setTimeout('window.print()',1000);
+    }
+</script>
+<div><{$header_print}></div>
+	<div>
+		<!-- Start categories loop -->
+		<{foreach item=category from=$categories}>
+			<div class="smartshop_categoryname">
+				
+				<{$category.self.name}>
+			</div>
+			<div>
+				<{if $category.self.image}>
+					<img class="smartshop_category_image" src="<{$category.self.image}>" alt="<{$category.self.name}>" width="<{$category_list_image_width}>"/>
+				<{/if}>
+				<{$category.self.description}>
+			</div>
+			<div class="smartshop_category_header">
+				<{$category.self.header}>
+			</div>
+			<{if $category.sub}>
+				<div class="smartshop_subcats">
+					<div class="smartshop_subcats_info"><{$smarty.const._MD_SSHOP_SUBCATEGORIES}></div>
+			  		<{foreach name=loop item=subcat from=$category.sub}>
+			  			<{$subcat.self.itemLink}><{if $smarty.foreach.loop.iteration < $category.subcatscount}> -<{/if}>
+			  		<{/foreach}>
+			  	</div>
+		  	<{/if}>
+		<{/foreach}>
+		<!-- End categories loop -->
+	</div>
+
+
+<div class="smartshop_items_list">
+	<{if $items}>
+		
+			<table>
+				<tr>
+					<td ></td>
+				  	<td>
+		  				<{$smarty.const._MD_SSHOP_TITLE}>
+		  			</td>			
+				  	<{if $display.description}>
+				  	<td>
+				  		<{$smarty.const._MD_SSHOP_DESCRIPTION}>
+		  			</td>
+				  	<{/if}>
+					<{foreach item=customField from=$customFields}> 
+						<{if $customField.summarydisp && $customField.display}>
+				  			<td>
+				  					<{$customField.caption}>
+				  			</td>
+				  		<{/if}>
+					<{/foreach}>
+					<{if $for_sale && $display.price}>
+						<td><{$smarty.const._MD_SSHOP_PRICE}></td>
+					<{/if}>	
+												
+		   		</tr>
+				<{foreach key=key item=item from=$sort_array}>
+					<tr>
+						<td height="50" >
+			  				<{if $items.$key.image != ''}>
+			  					<img src="<{$items.$key.image}>"/>
+			  				<{/if}>
+			  			</td>
+				    	<td>
+							<div >
+									<{$items.$key.name}>
+								
+							</div>
+						</td>
+			  		   	<{if $display.description}>
+			  		   	<td>
+			  		   		<div ><{$items.$key.description}></div>
+						</td>	
+						<{/if}>
+							<{foreach item=customField from=$customFields}> 
+								<{if $customField.summarydisp && $customField.display}>
+						  			<td><{$items.$key[$customField.name]}></td>
+						  		<{/if}>
+							<{/foreach}>
+							
+							<{if $for_sale && $display.price}>
+								<td><{$items.$key.price}></td>
+							<{/if}>	
+															
+		   			</tr>
+				<{/foreach}>
+			 </table>
+		
+			<{$category.self.pub}>
+			
+		
+	<{/if}>
+</div>
+<div><{$footer_print}></div>

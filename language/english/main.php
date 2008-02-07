@@ -72,6 +72,7 @@ define("_MD_SSHOP_TO_BASKET"," to cart");
 define("_MD_SSHOP_SUBMIT","Submit");
 //define("_MD_SSHOP_ADDED_TO_BASKET","%s %s added to your shopping cart");
 define("_MD_SSHOP_ALREADY_IN_BASKET","In your shopping cart(%s)");
+define("_MD_SSHOP_ALREADY_IN_BASKET1","In your shopping cart");
 define("_MD_SSHOP_ORDER","Order");
 define("_MD_SSHOP_ORDER_NAME","Name");
 define("_MD_SSHOP_ORDER_EMAIL","Email");
@@ -84,4 +85,5 @@ define("_MD_SSHOP_RECEIVED_ORDER","An order have been placed");
 define("_MD_SSHOP_CONFIRM_ORDER","Order Confirmation");
 define("_MD_SSHOP_ADDED_TO_BASKET","Item added to your shopping cart.");
 define("_CO_SHOP_THANKS_SHOPPING_HERE","Thanks for shopping on %s<br/>An email confirmation of your order has been sent to the entred email address.");
+define("_MD_SSHOP_RESET","Clear form");
 ?>
