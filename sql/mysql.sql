@@ -1,6 +1,4 @@
---
--- Structure de la table `smartshop_attribut_option`
---
+
 
 CREATE TABLE `smartshop_attribut_option` (
   `optionid` int(11) NOT NULL auto_increment,
@@ -13,9 +11,7 @@ CREATE TABLE `smartshop_attribut_option` (
 
 -- --------------------------------------------------------
 
---
--- Structure de la table `smartshop_basket`
---
+
 
 CREATE TABLE `smartshop_basket` (
   `basketid` int(11) NOT NULL auto_increment,
@@ -24,11 +20,7 @@ CREATE TABLE `smartshop_basket` (
   PRIMARY KEY  (`basketid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=34 ;
 
--- --------------------------------------------------------
 
---
--- Structure de la table `smartshop_basket_item`
---
 
 CREATE TABLE `smartshop_basket_item` (
   `basket_itemid` int(11) NOT NULL auto_increment,
@@ -38,9 +30,6 @@ CREATE TABLE `smartshop_basket_item` (
   PRIMARY KEY  (`basket_itemid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=61 ;
 
--- --------------------------------------------------------
-
---
 CREATE TABLE `smartshop_category` (
   `categoryid` int(11) NOT NULL auto_increment,
   `parentid` int(11) NOT NULL default '0',
@@ -131,7 +120,7 @@ CREATE TABLE `smartshop_meta` (
   PRIMARY KEY (`metakey`)
 ) TYPE=MyISAM COMMENT='SmartShop by The SmartFactory <www.smartfactory.ca>' ;
 
-INSERT INTO `smartshop_meta` VALUES ('version','1.0',0);
+INSERT INTO `smartshop_meta` VALUES ('version','1.1',0);
 
 CREATE TABLE `smartshop_transaction` (
   `transactionid` int(11) NOT NULL auto_increment,
