@@ -125,7 +125,9 @@ switch ($op) {
 		$totalItemsCount = count($itemsObj);
 		if($smartshop_module_use == 'boutique'){
 			$basket = $smartshop_basket_handler->get();
-			$basketItemArray =$basket->getItems(1);
+			if(!$basket->isNew()){
+				$basketItemArray =$basket->getItems(1);
+			}
 		}
 		if ($itemsObj) {
 			$i =0;

@@ -91,11 +91,22 @@ class SmartshopAttribut_optionHandler extends SmartPersistableObjectHandler {
     }
 
     function getOptionsByAttribut($attributid) {
-    	$criteria = new CriteriaCompo();
+    	//old code
+    	/*$criteria = new CriteriaCompo();
     	$criteria->add(new Criteria('attributid', $attributid));
     	$criteria->setSort('weight, attributid');
-    	return $this->getList($criteria);
-    }
+    	return $this->getList($criteria);*/
+
+    	static $options_array;
+	  	if (!isset($options_array[$attributid])) {
+	      	$criteria = new CriteriaCompo();
+    		$criteria->add(new Criteria('attributid', $attributid));
+    		$criteria->setSort('weight, attributid');
+    		$options_array[$attributid] =& $this->getList($criteria);
+
+		  }
+	     return $options_array[$attributid];
+	    }
 
 }
 ?>

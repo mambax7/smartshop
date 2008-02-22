@@ -147,7 +147,6 @@ class SmartshopItem_attribut extends SmartObject {
 }
 class SmartshopItem_attributHandler extends SmartPersistableObjectHandler {
     function SmartshopItem_attributHandler($db) {
-
         $this->SmartPersistableObjectHandler($db, 'item_attribut', array('attributid', 'itemid'), 'value', false, 'smartshop');
     }
 	function resetValues($attributid, $value = ''){
@@ -159,6 +158,15 @@ class SmartshopItem_attributHandler extends SmartPersistableObjectHandler {
 		$criteria = new CriteriaCompo();
 		$criteria->add(new Criteria('attributid', $attributid));
 		return $this->getList($criteria);
+	}
+	function getObjects($criteria = null, $id_as_key = false, $as_object = true, $sql=false, $debug=false){
+    	$itemAttributsObj = parent::getObjects($criteria , $id_as_key, $as_object, $sql, $debug);
+    	$attributIdIndexed = array();
+    	foreach($itemAttributsObj as $iao){
+    		$attributIdIndexed[$iao->getVar('attributid', 'e')] = $iao;
+    	}
+    	unset($itemAttributsObj);
+    	return $attributIdIndexed;
 	}
 }
 ?>

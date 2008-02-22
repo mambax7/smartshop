@@ -441,24 +441,68 @@ class SmartshopCategory_attributHandler extends SmartPersistableObjectHandler {
 
     function getOptionsFields($parentid){
     	global $smartshop_category_handler;
-    	$categoriesObj = $smartshop_category_handler->getObjects(null, true);
+    	static $categoriesObj4getOptionsFields;
+    	if(empty($categoriesObj4getOptionsFields)){
+    		$categoriesObj4getOptionsFields = $smartshop_category_handler->getObjects(null, true);
+   		}
     	$parentArray = array(0, $parentid);
-    	$catObj = $categoriesObj[$parentid];
+    	$catObj = $categoriesObj4getOptionsFields[$parentid];
     	while($catObj->getVar('parentid', 'e') != 0){
     		$parentArray[] = $catObj->getVar('parentid', 'e');
-    		$catObj = $categoriesObj[$catObj->getVar('parentid', 'e')];
+    		$catObj = $categoriesObj4getOptionsFields[$catObj->getVar('parentid', 'e')];
     	}
 
-    	$criteria = new CriteriaCompo();
+    	/*$criteria = new CriteriaCompo();
     	$criteria->add(new Criteria('parentid', "(".implode(', ', $parentArray).")", 'IN'));
     	$criteria->add(new Criteria('att_type', "('check', 'radio', 'select', 'select_multi')", 'IN'));
     	$attributsObj = $this->getObjects($criteria);
     	foreach($attributsObj as $attributObj) {
     		$ret[$attributObj->getVar('name')] = $attributObj->getOptionsArray();
+    	}*/
+    	static $attributsObj4getOptionsFields;
+    	if(!isset($attributsObj4getOptionsFields[$parentid])){
+	    	$criteria = new CriteriaCompo();
+	    	$criteria->add(new Criteria('parentid', "(".implode(', ', $parentArray).")", 'IN'));
+	    	$criteria->add(new Criteria('att_type', "('check', 'radio', 'select', 'select_multi')", 'IN'));
+	    	$attributsObj4getOptionsFields[$parentid] = $this->getObjects($criteria);
+    	}
+	    foreach($attributsObj4getOptionsFields[$parentid] as $attributObj) {
+    		$ret[$attributObj->getVar('name')] = $attributObj->getOptionsArray();
     	}
     	return $ret;
     }
 
+    function getCustomRederingFields($parentid){
+    	static $attributsObj4getCustomRederingFields;
+    	if(!isset($attributsObj4getCustomRederingFields[$parentid])){
+	    	$criteria = new CriteriaCompo();
+			$criteria->add(new Criteria('parentid', '('.$parentid.', 0)', 'IN'));
+			$criteria->add(new Criteria('custom_rendering', 0, '>'));
+			$attributsObj4getCustomRederingFields[$parentid] = $this->getObjects($criteria,0,1);
+    	}
+		$ret = array();
+		foreach($attributsObj4getCustomRederingFields[$parentid] as $crf){
+			$ret[$crf->getVar('name')] = $crf->getVar('custom_rendering', 'n');
+		}
+		return $ret;
+    }
+
+    function getCatAtt4Cat($categoryid)
+    {
+     global $smartshop_category_attribut_handler, $smartshop_category_handler;
+	  if(!isset($smartshop_category_handler)){
+	   $smartshop_category_handler =& xoops_getmodulehandler('category', 'smartshop');
+	   }
+	  static $categoy_attributs_array;
+	  if (!isset($categoy_attributs_array[$categoryid])) {
+	      $criteria = new CriteriaCompo();
+	      $criteria->add(new Criteria('parentid', '( 0, ' . $smartshop_category_handler->getParentIds($categoryid) . ')', 'IN'));
+	      $criteria->setSort('weight');
+	      $categoy_attributs_array[$categoryid] =& $this->getObjects($criteria);
+
+	  }
+     return $categoy_attributs_array[$categoryid];
+    }
 
 
 

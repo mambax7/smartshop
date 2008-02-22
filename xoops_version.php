@@ -288,7 +288,7 @@ $modversion['config'][$i]['valuetype'] = 'text';
 $modversion['config'][$i]['options'] = array(  _MI_SSHOP_SORT_WEIGHT => 'weight',
                                    			 _MI_SSHOP_SORT_ALPHA => 'name'
                                    			  );
-$modversion['config'][$i]['default'] = 'weight ASC';
+$modversion['config'][$i]['default'] = 'weight';
 
 $i++;
 $modversion['config'][$i]['name'] = 'nav_mode';

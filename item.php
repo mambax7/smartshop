@@ -121,8 +121,9 @@ $xoopsTpl->assign('categoryPath', $categoryPath . $itemObj->getVar('name'));
 
 if($smartshop_module_use == 'boutique'){
 	$basket = $smartshop_basket_handler->get();
-
-	$basketItemArray =$basket->getItems(1);
+	if(!$basket->isNew()){
+		$basketItemArray =$basket->getItems(1);
+	}
 	$in_basket = (isset($basketItemArray[$itemid]) && intval($basketItemArray[$itemid]['quantity']) > 0);
 	if($in_basket){
 		if($xoopsModuleConfig['max_qty_basket'] > 1  && $xoopsModuleConfig['max_qty_basket']){

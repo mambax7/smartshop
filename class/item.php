@@ -130,7 +130,7 @@ class SmartshopItem extends SmartSeoObject {
                 }
     	}
     	$optionFields = $smartshop_category_attribut_handler->getOptionsFields($this->getVar('parentid'));
-		$custom_render_array = $this->getCustomRederingFields();
+		$custom_render_array = $smartshop_category_attribut_handler->getCustomRederingFields($this->getVar('parentid'));
 		// Loop through the array and change special custom vars all array value for a string
 		foreach($objectArray as $k => $v) {
     		if(isset($optionFields[$k])){
@@ -146,6 +146,7 @@ class SmartshopItem extends SmartSeoObject {
     			}
     			unset($option_val);
     		}elseif($this->getVarInfo($k, 'custom_field_type') == 'file'){
+
 				$fileObj = $this->getFileObj($k);
     			if($fileObj->isNew()){
     				$objectArray[$k] = '';
@@ -213,19 +214,27 @@ class SmartshopItem extends SmartSeoObject {
     	if(!isset($smartshop_item_attribut_handler)){
 			$smartshop_item_attribut_handler =& xoops_getmodulehandler('item_attribut', 'smartshop');
 		}
-    	foreach ($category_attributObjs as $category_attributObj) {
-    		/**
-    		 * @todo Retreieving all item_attribut values should be done in a single query
-    		 */
-
-	    	if (!$this->isNew()) {
-		    	$item_attributObj =& $smartshop_item_attribut_handler->get(array($category_attributObj->getVar('attributid'), $this->getVar('itemid')));
-		    	$value = $item_attributObj->getVar('value', 'e');
-	    	} else {
-	    		$value = $category_attributObj->getVar('att_default');
+		$catAttIdArray = array();
+    	if (!$this->isNew()) {
+	    	foreach ($category_attributObjs as $category_attributObj) {
+	    		$catAttIdArray[] = $category_attributObj->getVar('attributid');
 	    	}
 
+			if (!$this->isNew()) {
+				//getObjects
+				$criteria = new CriteriaCompo();
+				$criteria->add(new Criteria('attributid', '('.implode(', ', $catAttIdArray).')', 'IN'));
+				$criteria->add(new Criteria('itemid', $this->getVar('itemid')));
+				$item_attributsObj = $smartshop_item_attribut_handler->getObjects($criteria);
+			}
+		}
 
+		foreach ($category_attributObjs as  $category_attributObj) {
+			if (!$this->isNew()) {
+				$value = $item_attributsObj[$category_attributObj->id()]->getVar('value', 'e');
+			}else{
+				$value = $category_attributObj->getVar('att_default');
+			}
     		$this->initVar($category_attributObj->getVar('name'), $category_attributObj->getObjectType(), $value, $category_attributObj->getVar('required'), null, '', false, $category_attributObj->getVar('caption'), $category_attributObj->getVar('description'));
     		$this->setVar($category_attributObj->getVar('name'), $value);
 
@@ -321,32 +330,20 @@ class SmartshopItem extends SmartSeoObject {
     {
     	global $smartshop_category_attribut_handler, $smartshop_category_handler;
 		if(!isset($smartshop_category_handler)){
-			$smartshop_category_handler =& xoops_getmodulehandler('category', 'smartshop');
+			//$smartshop_category_handler =& xoops_getmodulehandler('category', 'smartshop');
 			$smartshop_category_attribut_handler =& xoops_getmodulehandler('category_attribut', 'smartshop');
 
 		}
-    	$criteria = new CriteriaCompo();
+		$category_attributObjs = $smartshop_category_attribut_handler->getCatAtt4Cat($this->getVar('parentid'));
+    	//old code
+    	/*$criteria = new CriteriaCompo();
     	$criteria->add(new Criteria('parentid', '( 0, ' . $smartshop_category_handler->getParentIds($this->getVar('parentid')) . ')', 'IN'));
     	$criteria->setSort('weight');
-    	$category_attributObjs =& $smartshop_category_attribut_handler->getObjects($criteria);
+    	$category_attributObjs =& $smartshop_category_attribut_handler->getObjects($criteria);*/
     	return $category_attributObjs;
     }
-    function getCustomRederingFields(){
-    	global $smartshop_category_attribut_handler, $myts;
 
-    	$criteria = new CriteriaCompo();
-		$criteria->add(new Criteria('parentid', '('.$this->getVar('parentid').', 0)', 'IN'));
-		$criteria->add(new Criteria('custom_rendering', 0, '>'));
-		$customRenderFields = $smartshop_category_attribut_handler->getObjects($criteria,0,1);
-		$ret = array();
-		foreach($customRenderFields as $crf){
-			$ret[$crf->getVar('name')] = $crf->getVar('custom_rendering', 'n');
-		}
-		return $ret;
-    }
-
-
-	function getEditItemLink() {
+    function getEditItemLink() {
 		$ret = '<a href="' . SMARTSHOP_URL . 'admin/item.php?op=mod&itemid=' . $this->getVar('itemid') . '&categoryid=' . $this->getVar('parentid') . '"><img src="' . SMARTOBJECT_IMAGES_ACTIONS_URL . 'edit.png" style="vertical-align: middle;" alt="' . _CO_SOBJECT_MODIFY . '" title="' . _CO_SOBJECT_MODIFY . '" /></a>';
 		return $ret;
 	}

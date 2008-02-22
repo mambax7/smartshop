@@ -49,10 +49,13 @@ class SmartshopBasket extends SmartObject {
 		foreach($basket_itemsObj as $basket_itemObj){
 			$itemids[] = $basket_itemObj->getVar('itemid');
 		}
-		$criteria = new CriteriaCompo();
-		$criteria->add(new Criteria('itemid', "(".implode(', ', $itemids).")", 'IN'));
-		$itemsObj = $smartshop_item_handler->getObjects($criteria, true);
-
+		if(!empty($itemids)){
+			$criteria = new CriteriaCompo();
+			$criteria->add(new Criteria('itemid', "(".implode(', ', $itemids).")", 'IN'));
+			$itemsObj = $smartshop_item_handler->getObjects($criteria, true);
+		}else{
+			$itemsObj = array();
+		}
 		if($as_array){
 			$itemArray = array();
 			foreach($basket_itemsObj as  $basket_itemObj){
