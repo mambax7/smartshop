@@ -163,7 +163,7 @@ class SmartshopItem_attributHandler extends SmartPersistableObjectHandler {
     	$itemAttributsObj = parent::getObjects($criteria , $id_as_key, $as_object, $sql, $debug);
     	$attributIdIndexed = array();
     	foreach($itemAttributsObj as $iao){
-    		$attributIdIndexed[$iao->getVar('attributid', 'e')] = $iao;
+    		$attributIdIndexed[$iao->getVar('itemid', 'e')][$iao->getVar('attributid', 'e')] = $iao;
     	}
     	unset($itemAttributsObj);
     	return $attributIdIndexed;

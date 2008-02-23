@@ -6,7 +6,7 @@
 * Author: The SmartFactory <www.smartfactory.ca>
 * Licence: GNU
 */
-ini_set('memory_limit','128M');
+
 include_once('header.php');
 $categoryid = isset($_GET['categoryid']) ? $_GET['categoryid'] : 0;
 $sort = isset($_GET['sort']) ? $_GET['sort'] : $xoopsModuleConfig['cat_sort'];
@@ -77,7 +77,7 @@ if($smartshop_module_use == 'boutique'){
 }
 
 foreach($itemsObj as $itemObj) {
-	$itemObj->initiateCustomFields();
+	//$itemObj->initiateCustomFields();
 	$itemArray = $itemObj->toArray();
 	$sortArray [$i] = $itemArray[$sort];
 	if((isset($xoopsUser) && $xoopsUser != '') && $xoopsUser->getVar('uid') == $itemObj->getVar('uid', 'n')){

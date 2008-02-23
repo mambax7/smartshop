@@ -231,7 +231,7 @@ class SmartshopItem extends SmartSeoObject {
 
 		foreach ($category_attributObjs as  $category_attributObj) {
 			if (!$this->isNew()) {
-				$value = $item_attributsObj[$category_attributObj->id()]->getVar('value', 'e');
+				$value = $item_attributsObj[$this->getVar('itemid')][$category_attributObj->id()]->getVar('value', 'e');
 			}else{
 				$value = $category_attributObj->getVar('att_default');
 			}
@@ -335,11 +335,6 @@ class SmartshopItem extends SmartSeoObject {
 
 		}
 		$category_attributObjs = $smartshop_category_attribut_handler->getCatAtt4Cat($this->getVar('parentid'));
-    	//old code
-    	/*$criteria = new CriteriaCompo();
-    	$criteria->add(new Criteria('parentid', '( 0, ' . $smartshop_category_handler->getParentIds($this->getVar('parentid')) . ')', 'IN'));
-    	$criteria->setSort('weight');
-    	$category_attributObjs =& $smartshop_category_attribut_handler->getObjects($criteria);*/
     	return $category_attributObjs;
     }
 
@@ -608,6 +603,68 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 
 	}
 
+	function getObjects($criteria = null, $id_as_key = false, $as_object = true, $sql=false, $debug=false){
+    	$itemsObj = parent::getObjects($criteria , $id_as_key, $as_object, $sql, $debug);
+		$this->initiateCustomFields($itemsObj);
+		return $itemsObj;
+   	}
+
+	function initiateCustomFields($itemsObj) {
+		global $smartshop_item_attribut_handler, $smartshop_category_attribut_handler;
+		foreach($itemsObj as $itemObj){
+			$itemidArray[] = $itemObj->id();
+		}
+		$criteria = new CriteriaCompo();
+		$criteria->add(new Criteria('itemid', '('.implode(', ', $itemidArray).')', 'IN'));
+		$item_attributsObj = $smartshop_item_attribut_handler->getObjects($criteria);
+
+		$category_attributsObj = $smartshop_category_attribut_handler->getObjects(null, true);
+		foreach($itemsObj as $itemObj){
+	    	foreach($item_attributsObj[$itemObj->id()] as $item_attributObj){
+		    	if($itemObj->id() == $item_attributObj->getVar('itemid', 'e')){
+
+			    	$attributid = $item_attributObj->getVar('attributid', 'e');
+					if(is_object($category_attributsObj[$attributid])){
+				    	$itemObj->initVar($category_attributsObj[$attributid]->getVar('name'), $category_attributsObj[$attributid]->getObjectType(),
+					    	$item_attributObj->getVar('value'),	$category_attributsObj[$attributid]->getVar('required'), null, '', false,
+					    	$category_attributsObj[$attributid]->getVar('caption'),	$category_attributsObj[$attributid]->getVar('description'));
+					    	$itemObj->setVar($category_attributsObj[$attributid]->getVar('name'), $item_attributObj->getVar('value'));
+
+				    	$itemObj->setVarInfo($category_attributsObj[$attributid]->getVar('name'), 'custom_field_type',$category_attributsObj[$attributid]->getVar('att_type', 'n'));
+						$itemObj->setVarInfo($category_attributsObj[$attributid]->getVar('name'), 'size',0);
+					}
+		    	}
+
+
+	    	}
+
+		}
+	       // Reorganize fields for the CustomFields to be inserted after the "description" field
+	        $startvars = array();
+	        $middlevars = array();
+	        $endvars = array();
+	        $middleReached = false;
+	        // Looping through all the vars to split them in 3 arrays, $startvars, $middlevars and $endvars
+	        foreach ($this->vars as $key=>$var) {
+	        	// if the middle (which in our this object is the "description" field) has not been reached,
+	        	// then we keep adding the field in the $startvars array
+				if (!$middleReached) {
+					$startvars[$key] = $var;
+					if ($key=='description') {
+						$middleReached = true;
+					}
+				} else {
+					// if the middle has been reached, then we check to see if this field is a constant field or a dynamic one
+					if (isset($constantVars[$key])) {
+						$endvars[$key] = $var;
+					} else {
+						$middlevars[$key] = $var;
+					}
+				}
+	        }
+	        $this->vars = $startvars + $middlevars + $endvars;
+
+    }
 	function &getObjectsForSearchForm($criteria = null, $custom_field_kw_array = null, $categoryid = 0, $andOr=1)
 	{
 		global $smartpermissions_handler, $smartshop_category_handler;
@@ -692,10 +749,11 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 		while ($myrow = $this->db->fetchArray($result)) {
 			$item = new SmartshopItem();
 			$item->assignVars($myrow);
-			$item->initiateCustomFields();
+			//$item->initiateCustomFields();
 			$ret[] =& $item;
 			unset($item);
 		}
+		$this->initiateCustomFields($ret);
 		return $ret;
 	}
 

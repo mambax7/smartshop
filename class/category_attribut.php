@@ -442,12 +442,12 @@ class SmartshopCategory_attributHandler extends SmartPersistableObjectHandler {
     function getOptionsFields($parentid){
     	global $smartshop_category_handler;
     	static $categoriesObj4getOptionsFields;
-    	if(empty($categoriesObj4getOptionsFields)){
+    	if(!isset($categoriesObj4getOptionsFields)){
     		$categoriesObj4getOptionsFields = $smartshop_category_handler->getObjects(null, true);
    		}
     	$parentArray = array(0, $parentid);
     	$catObj = $categoriesObj4getOptionsFields[$parentid];
-    	while($catObj->getVar('parentid', 'e') != 0){
+    	while(is_object($catObj) && $catObj->getVar('parentid', 'e') != 0){
     		$parentArray[] = $catObj->getVar('parentid', 'e');
     		$catObj = $categoriesObj4getOptionsFields[$catObj->getVar('parentid', 'e')];
     	}
