@@ -6,7 +6,7 @@
 * Author: The SmartFactory <www.smartfactory.ca>
 * Licence: GNU
 */
-
+ini_set('memory_limit','64M');
 include_once "../../mainfile.php";
 
 if( !defined("SMARTSHOP_DIRNAME") ){

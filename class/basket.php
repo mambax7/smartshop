@@ -119,10 +119,11 @@ class SmartshopBasket extends SmartObject {
 		$criteria = new CriteriaCompo();
 		$criteria->add(new Criteria('itemid', '('.implode($itemKeysArray,', ').')', 'IN'));
 		$item_attributsObj = $smartshop_item_attribut_handler->getObjects($criteria);
-
-		foreach($item_attributsObj as $item_attributObj){
+$this->_item_attributs = $item_attributsObj;
+//var_dump($this->_item_attributs );exit;
+		/*foreach($item_attributsObj as $item_attributObj){
 			$this->_item_attributs[$item_attributObj->getVar('itemid', 'e')][$item_attributObj->getVar('attributid', 'e')] = $item_attributObj;
-		}
+		}*/
 	}
 
  	function getItem_attributs($itemid, $key){

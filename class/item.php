@@ -605,12 +605,20 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 
 	function getObjects($criteria = null, $id_as_key = false, $as_object = true, $sql=false, $debug=false){
     	$itemsObj = parent::getObjects($criteria , $id_as_key, $as_object, $sql, $debug);
-		$this->initiateCustomFields($itemsObj);
-		return $itemsObj;
+		//patch PHP4
+		$itemsObj2 = $this->initiateCustomFields($itemsObj);
+		return $itemsObj2;
+		/*$this->initiateCustomFields($itemsObj);
+		return $itemsObj;*/
+		// End patch PHP4
    	}
 
 	function initiateCustomFields($itemsObj) {
 		global $smartshop_item_attribut_handler, $smartshop_category_attribut_handler;
+		if(!isset($smartshop_item_attribut_handler)){
+			$smartshop_item_attribut_handler =& xoops_getmodulehandler('item_attribut','smartshop');
+			$smartshop_category_attribut_handler =& xoops_getmodulehandler('category_attribut','smartshop');
+		}
 		foreach($itemsObj as $itemObj){
 			$itemidArray[] = $itemObj->id();
 		}
@@ -637,32 +645,11 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 
 
 	    	}
-
+			//patch PHP4
+			$itemsObj2[$itemObj->id()] = $itemObj;
 		}
-	       // Reorganize fields for the CustomFields to be inserted after the "description" field
-	        $startvars = array();
-	        $middlevars = array();
-	        $endvars = array();
-	        $middleReached = false;
-	        // Looping through all the vars to split them in 3 arrays, $startvars, $middlevars and $endvars
-	        foreach ($this->vars as $key=>$var) {
-	        	// if the middle (which in our this object is the "description" field) has not been reached,
-	        	// then we keep adding the field in the $startvars array
-				if (!$middleReached) {
-					$startvars[$key] = $var;
-					if ($key=='description') {
-						$middleReached = true;
-					}
-				} else {
-					// if the middle has been reached, then we check to see if this field is a constant field or a dynamic one
-					if (isset($constantVars[$key])) {
-						$endvars[$key] = $var;
-					} else {
-						$middlevars[$key] = $var;
-					}
-				}
-	        }
-	        $this->vars = $startvars + $middlevars + $endvars;
+		//patch PHP4
+	    return $itemsObj2;
 
     }
 	function &getObjectsForSearchForm($criteria = null, $custom_field_kw_array = null, $categoryid = 0, $andOr=1)
@@ -699,10 +686,10 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 						$sql .= $andOr;
 					}
 				$sql .= " itemid IN
-					(Select xoops_smartshop_item_attribut.itemid
+					(Select ".$this->db->prefix('smartshop_item_attribut').".itemid
 					FROM ".$this->db->prefix('smartshop_item_attribut').", ".$this->db->prefix('smartshop_category_attribut')."
 					WHERE ".$this->db->prefix('smartshop_category_attribut.attributid')." = ".$this->db->prefix('smartshop_item_attribut.attributid')."
-					AND (xoops_smartshop_category_attribut.parentid = ".$categoryid." OR xoops_smartshop_category_attribut.parentid = 0)";
+					AND (".$this->db->prefix('smartshop_category_attribut').".parentid = ".$categoryid." OR ".$this->db->prefix('smartshop_category_attribut').".parentid = 0)";
 
 					$sql .= " AND (".$this->db->prefix('smartshop_category_attribut.name')." = '".$field."'
 							AND ".$this->db->prefix('smartshop_item_attribut.value')." LIKE '%".$keyword."%')) ";
@@ -762,12 +749,23 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 	$ret = array();
 
 	$sql = "SELECT * FROM ".$this->db->prefix('smartshop_item')." WHERE itemid IN (
+			SELECT DISTINCT ".$this->db->prefix('smartshop_item.itemid')." FROM ".$this->db->prefix('smartshop_item')." LEFT JOIN ".
+			$this->db->prefix('smartshop_item_attribut')." ON  ".
+			$this->db->prefix('smartshop_item.itemid')." = ".$this->db->prefix('smartshop_item_attribut.itemid')." LEFT JOIN ".
+			$this->db->prefix('smartshop_attribut_option')." ON (".
+			$this->db->prefix('smartshop_item_attribut.attributid')." =  ".$this->db->prefix('smartshop_attribut_option.attributid')."
+			AND  ".$this->db->prefix('smartshop_item_attribut.value')." =  ".$this->db->prefix('smartshop_attribut_option.optionid').")";
+
+	$sql .= " WHERE status = "._SSHOP_STATUS_ONLINE;
+
+	/*$sql = "SELECT * FROM ".$this->db->prefix('smartshop_item')." WHERE itemid IN (
 			SELECT DISTINCT ".$this->db->prefix('smartshop_item.itemid')." FROM ".$this->db->prefix('smartshop_item').",  ".
 			$this->db->prefix('smartshop_item_attribut').",  ".$this->db->prefix('smartshop_attribut_option')."
 			WHERE ".$this->db->prefix('smartshop_item.itemid')." = ".$this->db->prefix('smartshop_item_attribut.itemid')."
 			AND  ".$this->db->prefix('smartshop_item_attribut.attributid')." =  ".$this->db->prefix('smartshop_attribut_option.attributid')."
 			AND  ".$this->db->prefix('smartshop_item_attribut.value')." =  ".$this->db->prefix('smartshop_attribut_option.optionid')." ";
-	$sql .= " AND status = "._SSHOP_STATUS_ONLINE;
+	$sql .= " AND status = "._SSHOP_STATUS_ONLINE;*/
+
 	if ($userid != 0) {
 		$sql .= " AND uid = ".$userid;
 	}
@@ -775,8 +773,8 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 	if ($queryarray) {
 		$sql .= " AND (";
 		for ($i = 0; $i < count($queryarray); $i++) {
-			$sql .= " ( name LIKE '%" . $queryarray[$i] . "%' OR ";
-			$sql .= " description LIKE '%" . $queryarray[$i] . "%' OR ";
+			$sql .= " ( ".$this->db->prefix('smartshop_item').".name LIKE '%" . $queryarray[$i] . "%' OR ";
+			$sql .= " ".$this->db->prefix('smartshop_item').".description LIKE '%" . $queryarray[$i] . "%' OR ";
 			$sql .= " ".$this->db->prefix('smartshop_attribut_option.caption')." LIKE '%" . $queryarray[$i] . "%') ";
 			//$sql .= " ".$this->db->prefix('smartshop_item_attribut.value')." LIKE '%" . $queryarray[$i] . "%' ) ";
 
@@ -784,8 +782,8 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 				$sql .= $andor;
 			}
 		}
-		$sql .= " )) OR itemid IN ( SELECT DISTINCT xoops_smartshop_item.itemid FROM xoops_smartshop_item, xoops_smartshop_item_attribut
-			WHERE xoops_smartshop_item.itemid = xoops_smartshop_item_attribut.itemid
+		$sql .= " )) OR ".$this->db->prefix('smartshop_item').".itemid IN ( SELECT DISTINCT ".$this->db->prefix('smartshop_item').".itemid FROM ".$this->db->prefix('smartshop_item').", ".$this->db->prefix('smartshop_item_attribut')."
+			WHERE ".$this->db->prefix('smartshop_item').".itemid = ".$this->db->prefix('smartshop_item_attribut.itemid')."
 			AND status = "._SSHOP_STATUS_ONLINE." AND (";
 
 		for ($i = 0; $i < count($queryarray); $i++) {

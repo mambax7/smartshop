@@ -79,6 +79,7 @@ if($smartshop_module_use == 'boutique'){
 foreach($itemsObj as $itemObj) {
 	//$itemObj->initiateCustomFields();
 	$itemArray = $itemObj->toArray();
+	//var_dump($itemArray);exit;
 	$sortArray [$i] = $itemArray[$sort];
 	if((isset($xoopsUser) && $xoopsUser != '') && $xoopsUser->getVar('uid') == $itemObj->getVar('uid', 'n')){
 		$itemArray['can_edit'] = 1;
