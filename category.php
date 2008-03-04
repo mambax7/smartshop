@@ -158,7 +158,9 @@ $categoryPath = $categoryObj->getCategoryPath(true, true);
 $xoopsTpl->assign('categoryPath', $categoryPath);
 $xoopsTpl->assign('categories', $categories);
 $xoopsTpl->assign('module_home', smart_getModuleName(true, true));
-
+if($xoopsModuleConfig['footer_display'] == 'category' || 'both'){
+	$xoopsTpl->assign('footer', $xoopsModuleConfig['footer'] );
+}
 /**
  * Generating meta information for this item
  */

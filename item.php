@@ -112,7 +112,9 @@ if($can_edit && ($smartshop_module_use == 'dynamic_directory' ||$smartshop_modul
 	$xoopsTpl->assign('autoEditLinks',$itemObj->getAutoEditLinks());
 	$xoopsTpl->assign('status',$itemObj->getVar('status','s'));
 }
-
+if($xoopsModuleConfig['footer_display'] == 'item' || 'both'){
+	$xoopsTpl->assign('footer', $xoopsModuleConfig['footer'] );
+}
 $xoopsTpl->assign('module_home', smart_getModuleName(true, true));
 $xoopsTpl->assign('categoryPath', $categoryPath . $itemObj->getVar('name'));
 

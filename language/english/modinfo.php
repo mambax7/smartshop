@@ -155,4 +155,11 @@ define("_MI_SSHOP_TAREA_WIDTH", "# columns for Text areas");
 define("_MI_SSHOP_TAREA_WIDTH_DSC", "");
 define("_MI_SSHOP_TAREA_HEIGHT", "# rows for Text areas");
 define("_MI_SSHOP_TAREA_HEIGHT_DSC", "");
+define("_MI_SSHOP_FOOTER", "Page Footer");
+define("_MI_SSHOP_FOOTER_DSC", "");
+define("_MI_SSHOP_FOOTER_DISP", "Display the footer in:");
+define("_MI_SSHOP_FOOTER_DISP_DSC", "");
+define("_MI_SSHOP_FOOTER_DISP_ITEM", "Item page");
+define("_MI_SSHOP_FOOTER_DISP_CAT", "Category page");
+define("_MI_SSHOP_FOOTER_DISP_BOTH", "Both");
 ?>

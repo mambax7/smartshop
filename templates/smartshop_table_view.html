@@ -49,7 +49,7 @@
 						<td height="50" >
 			  				<{if $smartshop_module_use == 'adds'}>
 			  					<a href="<{$items.$key.link_url}>" target="_blank"><img src="<{$items.$key.image}>"</a>
-			  				<{elseif $smartshop_module_use=='boutique'}>
+			  				<{else}>
 			  					<a href="<{$items.$key.itemUrl}>"><img src="<{$items.$key.image}>"</a>
 			  				<{/if}>
 			  			</td>
@@ -57,7 +57,7 @@
 							<div >
 								<{if $smartshop_module_use == 'adds'}>
 									<{$items.$key.name}>
-								<{elseif $smartshop_module_use=='boutique'}>
+								<{else}>
 									<a href='item.php?itemid=<{$items.$key.itemid}>'><{$items.$key.name}></a>
 								<{/if}>
 							</div>

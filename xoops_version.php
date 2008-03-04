@@ -402,6 +402,28 @@ $modversion['config'][$i]['formtype'] = 'textarea';
 $modversion['config'][$i]['valuetype'] = 'text';
 $modversion['config'][$i]['default'] = '';
 
+
+$i++;
+$modversion['config'][$i]['name'] = 'footer';
+$modversion['config'][$i]['title'] = '_MI_SSHOP_FOOTER';
+$modversion['config'][$i]['description'] = '_MI_SSHOP_FOOTER_DSC';
+$modversion['config'][$i]['formtype'] = 'textarea';
+$modversion['config'][$i]['valuetype'] = 'text';
+$modversion['config'][$i]['default'] = '';
+
+$i++;
+$modversion['config'][$i]['name'] = 'footer_display';
+$modversion['config'][$i]['title'] = '_MI_SSHOP_FOOTER_DISP';
+$modversion['config'][$i]['description'] = '_MI_SSHOP_FOOTER_DISP_DSC';
+$modversion['config'][$i]['formtype'] = 'select';
+$modversion['config'][$i]['valuetype'] = 'text';
+$modversion['config'][$i]['options'] = array(_MI_SSHOP_FOOTER_DISP_ITEM  => 'item',
+                                   			 _MI_SSHOP_FOOTER_DISP_CAT => 'category',
+                                   			 _MI_SSHOP_FOOTER_DISP_BOTH => 'both'
+                                  		 );
+$modversion['config'][$i]['default'] = 'both';
+
+
 $i++;
 $modversion['config'][$i]['name'] = 'maximum_imagesize';
 $modversion['config'][$i]['title'] = '_MI_SSHOP_MAX_SIZE';
