@@ -1,5 +1,5 @@
 <?php
-ini_set('memory_limit','128M');
+ini_set('memory_limit','32M');
 global $smartshop_category_handler, $smartshop_category_attribut_handler,$smartshop_item_handler, $xoopsUser, $xoopsModuleConfig;
 include_once("header.php");
 
