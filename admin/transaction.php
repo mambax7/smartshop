@@ -124,6 +124,33 @@ switch ($op) {
 
 		break;
 
+	case 'with_selected_actions':
+		if($_POST["selected_action"] == 'delete_sel'){
+			smart_xoops_cp_header();
+			smart_adminMenu(2, _AM_SSHOP_TRANSACTIONS);
+
+			echo "Delete";
+			break;
+		}elseif($_POST["selected_action"] == 'export_sel'){
+				$criteria = new CriteriaCompo();
+				$criteria->add(new Criteria('transactionid', '(' . implode(', ', $_POST['selected_smartobjects']) . ')', 'IN'));
+
+				include_once(SMARTSHOP_ROOT_PATH . 'class/smartshopexport.php');
+				$fields = array(
+					'transactionid',
+					'tran_date',
+					'itemid',
+					'price',
+					'quantity',
+					'uname',
+					'vendor_adp'
+				);
+				$smartObjectExport = new SmartShopExport($smartshop_transaction_handler, $criteria, $fields);
+				$smartObjectExport->render();
+				exit;
+			break;
+		}
+
 
 	default:
 
@@ -139,7 +166,7 @@ switch ($op) {
 		$criteria->setSort('trans_date');
 		$criteria->setOrder('DESC');
 		$objectTable = new SmartObjectTable($smartshop_transaction_handler, $criteria, array('delete'));
-
+		$objectTable->addWithSelectedActions(array('delete_sel' => _CO_SOBJECT_DELETE, 'export_sel'=>_CO_SOBJECT_EXPORT));
 		$objectTable->setTableId('createdtransactions');
 		$objectTable->addColumn(new SmartObjectColumn('tran_date', 'center', 175));
 		//$objectTable->addColumn(new SmartObjectColumn('tran_uid', 'left', 150));
@@ -150,8 +177,8 @@ switch ($op) {
 		$custom_fields = $smartshop_category_attribut_handler->getObjects($criteria);
 
 		foreach($custom_fields as $custom_field){
-			if($custom_field->getVar('att_type', 'e') != 'form_section'){
-				$objectTable->addColumn(new SmartObjectColumn($custom_field->getVar('name'), 'center', 100));
+			if($custom_field->getVar('att_type', 'e') != 'form_section' && $custom_field->getVar('display')){
+				$objectTable->addColumn(new SmartObjectColumn($custom_field->getVar('name'), 'center', 100, false, false, $custom_field->getVar('caption')));
 			}
 		}
 

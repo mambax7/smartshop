@@ -14,6 +14,7 @@ global $smartshop_category_handler, $smartshop_item_handler, $xoopsUser, $smart_
 $itemid = isset($_REQUEST['itemid']) ? intval($_REQUEST['itemid']) : 0;
 
 // Creating the item object for the selected itemid
+
 $itemObj = $smartshop_item_handler->get($itemid);
 
 if((isset($xoopsUser) && $xoopsUser != '') && $xoopsUser->getVar('uid') == $itemObj->getVar('uid', 'n')){

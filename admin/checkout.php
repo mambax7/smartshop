@@ -95,7 +95,7 @@ switch ($op) {
 		foreach($attributsObj as $attributid=>$attributobj) {
 			$attributobj->setVar('weight', isset($_POST['weight_' . $attributid]) ? intval($_POST['weight_' . $attributid]) : 0);
 			$attributobj->setVar('required', isset($_POST['required_' . $attributid]) ? intval($_POST['required_' . $attributid]) : 0);
-
+			$attributobj->setVar('display', isset($_POST['display_' . $attributid]) ? intval($_POST['display_' . $attributid]) : 0);
 			$smartshop_category_attribut_handler->insert($attributobj);
 		}
 
@@ -132,6 +132,7 @@ switch ($op) {
 
 		$objectTable->addColumn(new SmartObjectColumn('caption', 'left', false, _CO_SSHOP_CAT_ATTRIBUT_CAOPTION));
 		$objectTable->addColumn(new SmartObjectColumn('weight', 'center', 100, 'getWeightControl'));
+		$objectTable->addColumn(new SmartObjectColumn('display', 'center', 100, 'getDisplayControl', false, _AM_SSHOP_CH_OUT_ATTRIBUT_DISPLAY));
 		$objectTable->addColumn(new SmartObjectColumn('required', 'center', 100, 'getRequiredControl'));
 		$objectTable->addActionButton('updateCustomFields', _SUBMIT, _CO_SOBJECT_UPDATE_ALL . ':');
 

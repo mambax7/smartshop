@@ -179,7 +179,7 @@ class SmartshopTransaction extends SmartObject {
 
     }
 
-    function initiateCustomFields() {
+   /* function initiateCustomFields() {
 
     	// $constantVars are the vars without the dynamic fields
     	$constantVars = $this->vars;
@@ -187,9 +187,6 @@ class SmartshopTransaction extends SmartObject {
 
     	global $smartshop_item_attribut_handler, $xoopsModuleConfig;
     	foreach ($category_attributObjs as $category_attributObj) {
-    		/**
-    		 * @todo Retreieving all item_attribut values should be done in a single query
-    		 */
 
 	    	if (!$this->isNew()) {
 		    	$item_attributObj =& $smartshop_item_attribut_handler->get(array($category_attributObj->getVar('attributid'), $this->getVar('transactionid')));
@@ -293,6 +290,128 @@ class SmartshopTransaction extends SmartObject {
         }
         $this->vars = $startvars + $middlevars + $endvars;
     }
+*/
+	function initiateCustomFields() {
+
+    	// $constantVars are the vars without the dynamic fields
+    	$constantVars = $this->vars;
+    	$category_attributObjs =& $this->getCustomFields();
+
+    	global $smartshop_item_attribut_handler, $xoopsModuleConfig;
+    	if(!isset($smartshop_item_attribut_handler)){
+			$smartshop_item_attribut_handler =& xoops_getmodulehandler('item_attribut', 'smartshop');
+		}
+		$catAttIdArray = array();
+    	if (!$this->isNew()) {
+	    	foreach ($category_attributObjs as $category_attributObj) {
+	    		$catAttIdArray[] = $category_attributObj->getVar('attributid');
+	    	}
+
+			if (!$this->isNew()) {
+				//getObjects
+				$criteria = new CriteriaCompo();
+				$criteria->add(new Criteria('attributid', '('.implode(', ', $catAttIdArray).')', 'IN'));
+				$criteria->add(new Criteria('itemid', $this->getVar('itemid')));
+				$item_attributsObj = $smartshop_item_attribut_handler->getObjectsD($criteria);
+			}
+		}
+
+		foreach ($category_attributObjs as  $category_attributObj) {
+			if (!$this->isNew()) {
+				$value = $item_attributsObj[$this->getVar('itemid')][$category_attributObj->id()]->getVar('value', 'e');
+			}else{
+				$value = $category_attributObj->getVar('att_default');
+			}
+    		$this->initVar($category_attributObj->getVar('name'), $category_attributObj->getObjectType(), $value, $category_attributObj->getVar('required'), null, '', false, $category_attributObj->getVar('caption'), $category_attributObj->getVar('description'));
+    		$this->setVar($category_attributObj->getVar('name'), $value);
+
+    		$this->setVarInfo($category_attributObj->getVar('name'), 'custom_field_type',$category_attributObj->getVar('att_type', 'n'));
+			$this->setVarInfo($category_attributObj->getVar('name'), 'size',0);
+	  		// Create the customControl if needed
+	    	switch ($category_attributObj->getVar('att_type', 'n')) {
+
+
+	    		case 'text' :
+					$this->setControl($category_attributObj->getVar('name'), array('name' => 'text', 'js' => $category_attributObj->getJsForUnique()));
+	    			break;
+
+	    		case 'check' :
+					$this->setControl($category_attributObj->getVar('name'), array('name' => 'check',
+																					'options' => $category_attributObj->getOptionsArray()));
+	    			break;
+
+	    		case 'html' :
+
+	    			break;
+
+	    		case 'radio' :
+					$this->setControl($category_attributObj->getVar('name'), array('name' => 'radio',
+																					'options' => $category_attributObj->getOptionsArray()));
+
+	    			break;
+
+	    		case 'select' :
+					$this->setControl($category_attributObj->getVar('name'), array('name' => 'select',
+																				   'options' => $category_attributObj->getOptionsArray()));
+	    			break;
+
+				case 'select_multi' :
+					$this->setControl($category_attributObj->getVar('name'), array('name' => 'select_multi',
+																				   'options' => $category_attributObj->getOptionsArray()));
+	    			break;
+
+	    		case 'tarea' :
+					$this->setControl($category_attributObj->getVar('name'), array('name' => 'textarea',
+																				   'cols' => $xoopsModuleConfig['txtarea_width'],
+																				   'rows' => $xoopsModuleConfig['txtarea_height']));
+
+
+	    			break;
+
+				case 'yn' :
+					$this->setControl($category_attributObj->getVar('name'), "yesno");
+	    			break;
+
+				case 'file' :
+					$this->setControl($category_attributObj->getVar('name'), "richfile");
+					break;
+
+				case 'image' :
+					$this->setControl($category_attributObj->getVar('name'), "image");
+					break;
+
+	    		default:
+	    		//case 'text' :
+
+	    			break;
+	    	}
+    	}
+
+       // Reorganize fields for the CustomFields to be inserted after the "description" field
+        $startvars = array();
+        $middlevars = array();
+        $endvars = array();
+        $middleReached = false;
+        // Looping through all the vars to split them in 3 arrays, $startvars, $middlevars and $endvars
+        foreach ($this->vars as $key=>$var) {
+        	// if the middle (which in our this object is the "description" field) has not been reached,
+        	// then we keep adding the field in the $startvars array
+			if (!$middleReached) {
+				$startvars[$key] = $var;
+				if ($key=='description') {
+					$middleReached = true;
+				}
+			} else {
+				// if the middle has been reached, then we check to see if this field is a constant field or a dynamic one
+				if (isset($constantVars[$key])) {
+					$endvars[$key] = $var;
+				} else {
+					$middlevars[$key] = $var;
+				}
+			}
+        }
+        $this->vars = $startvars + $middlevars + $endvars;
+    }
 
     function getCustomFields()
     {
@@ -339,6 +458,7 @@ class SmartshopTransaction extends SmartObject {
 		$ret .= "</table>";
 		return $ret;
 	}
+
 }
 
 class SmartshopTransactionHandler extends SmartPersistableObjectHandler {
