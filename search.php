@@ -132,6 +132,7 @@ switch ($op) {
 		if ($itemsObj) {
 			$i =0;
 			foreach ($itemsObj as $itemObj) {
+				//var_dump(count($itemObj->vars));echo " Cat: ".$itemObj->getVar('parentid')."Id: ".$itemObj->getVar('itemid')."<br><br>";
 				if($tpl == 'table' || ($i >= $start && $i < ($start+$limit))){
 					$itemArray = $itemObj->toArray(true);
 					$sortArray [$i] = $itemArray[$sort];
@@ -144,7 +145,7 @@ switch ($op) {
 								$xoopsTpl->assign('message', _MD_SSHOP_ALREADY_IN_BASKET1);
 							}
 						}
-					}
+					}//var_dump($itemArray);exit;
 					$items_array[$i] = $itemArray;
 				}
 				$i++;

@@ -150,7 +150,10 @@
 											<select name='quantity'>
 											<{$qty_opt}>
 											</select>
+										<{else}>
+											<input type='hidden' name='quantity' value='1'>	
 										<{/if}>
+																
 										<{$smarty.const._MD_SSHOP_TO_BASKET}>
 										<input type='hidden' name='itemid' value='<{$items.$key.itemid}>'>
 										<input type='submit' name='add_basket' value='<{$smarty.const._MD_SSHOP_SUBMIT}>'>

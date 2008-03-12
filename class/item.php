@@ -228,10 +228,11 @@ class SmartshopItem extends SmartSeoObject {
 				$item_attributsObj = $smartshop_item_attribut_handler->getObjects($criteria);
 			}
 		}
-
 		foreach ($category_attributObjs as  $category_attributObj) {
 			if (!$this->isNew()) {
-				$value = $item_attributsObj[$this->getVar('itemid')][$category_attributObj->id()]->getVar('value', 'e');
+				if(is_object($item_attributsObj[$this->getVar('itemid', 'e')][$category_attributObj->getVar('attributid', 'e')])){
+					$value = $item_attributsObj[$this->getVar('itemid', 'e')][$category_attributObj->getVar('attributid', 'e')]->getVar('value', 'e');
+				}
 			}else{
 				$value = $category_attributObj->getVar('att_default');
 			}
@@ -602,25 +603,77 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 		}
 
 	}
+	function &getD($id, $as_object = true, $initiate_c_f=true) {
+		return $this->get($id, $as_object, true, false, $initiate_c_f);
+    }
 
-	function getObjects($criteria = null, $id_as_key = false, $as_object = true, $sql=false, $debug=false){
+    function &get($id, $as_object = true, $debug=false, $criteria=false, $dropCF=false) {
+        if (!$criteria) {
+        	$criteria = new CriteriaCompo();
+        }
+        if (is_array($this->keyName)) {
+            for ($i = 0; $i < count($this->keyName); $i++) {
+	            /**
+	             * In some situations, the $id is not an INTEGER. SmartObjectTag is an example.
+	             * Is the fact that we removed the intval() represents a security risk ?
+	             */
+                //$criteria->add(new Criteria($this->keyName[$i], ($id[$i]), '=', $this->_itemname));
+                $criteria->add(new Criteria($this->keyName[$i], $id[$i], '=', $this->_itemname));
+            }
+        }
+        else {
+            //$criteria = new Criteria($this->keyName, intval($id), '=', $this->_itemname);
+            /**
+             * In some situations, the $id is not an INTEGER. SmartObjectTag is an example.
+             * Is the fact that we removed the intval() represents a security risk ?
+             */
+            $criteria->add(new Criteria($this->keyName, $id, '=', $this->_itemname));
+        }
+        $criteria->setLimit(1);
+
+        if ($debug) {
+        	$obj_array = $this->getObjectsD($criteria, false, $as_object, false, false, $dropCF);
+        } else {
+        	$obj_array = $this->getObjects($criteria, false, $as_object, false, false, $dropCF);
+        	//patch : weird bug of indexing by id even if id_as_key = false;
+        	if(!isset($obj_array[0]) && is_object($obj_array[$id])){
+        		$obj_array[0] = $obj_array[$id];
+        		unset($obj_array[$id]);
+				$obj_array[0]->unsetNew();
+        	}
+        }
+
+        if (count($obj_array) != 1) {
+            $obj = $this->create();
+            return $obj;
+        }
+
+        return $obj_array[0];
+    }
+
+	function getObjects($criteria = null, $id_as_key = false, $as_object = true, $sql=false, $debug=false, $dropCF=false){
     	$itemsObj = parent::getObjects($criteria , $id_as_key, $as_object, $sql, $debug);
 		//patch PHP4
-		$itemsObj2 = $this->initiateCustomFields($itemsObj);
-		return $itemsObj2;
+		if($dropCF){
+			return $itemsObj;
+		}else{
+			$itemsObj2 = $this->initiateCustomFields($itemsObj);
+			return $itemsObj2;
+		}
 		/*$this->initiateCustomFields($itemsObj);
 		return $itemsObj;*/
 		// End patch PHP4
    	}
 
 	function initiateCustomFields($itemsObj) {
+
 		global $smartshop_item_attribut_handler, $smartshop_category_attribut_handler;
 		if(!isset($smartshop_item_attribut_handler)){
 			$smartshop_item_attribut_handler =& xoops_getmodulehandler('item_attribut','smartshop');
 			$smartshop_category_attribut_handler =& xoops_getmodulehandler('category_attribut','smartshop');
 		}
 		foreach($itemsObj as $itemObj){
-			$itemidArray[] = $itemObj->id();
+			$itemidArray[] = $itemObj->getVar('itemid', 'e');
 		}
 		$criteria = new CriteriaCompo();
 		$criteria->add(new Criteria('itemid', '('.implode(', ', $itemidArray).')', 'IN'));
@@ -628,9 +681,9 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 
 		$category_attributsObj = $smartshop_category_attribut_handler->getObjects(null, true);
 		foreach($itemsObj as $itemObj){
-	    	foreach($item_attributsObj[$itemObj->id()] as $item_attributObj){
-		    	if($itemObj->id() == $item_attributObj->getVar('itemid', 'e')){
-
+	    	$constantVars = $itemObj->vars;
+	    	foreach($item_attributsObj[$itemObj->getVar('itemid', 'e')] as $item_attributObj){
+		    	if($itemObj->getVar('itemid', 'e') == $item_attributObj->getVar('itemid', 'e')){
 			    	$attributid = $item_attributObj->getVar('attributid', 'e');
 					if(is_object($category_attributsObj[$attributid])){
 				    	$itemObj->initVar($category_attributsObj[$attributid]->getVar('name'), $category_attributsObj[$attributid]->getObjectType(),
@@ -646,7 +699,7 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 
 	    	}
 			//patch PHP4
-			$itemsObj2[$itemObj->id()] = $itemObj;
+			$itemsObj2[$itemObj->getVar('itemid', 'e')] = $itemObj;
 		}
 		//patch PHP4
 	    return $itemsObj2;
@@ -664,8 +717,11 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 				$childCats[] = $child['categoryid'];
 			}
 			$searchCats = array_intersect($childCats,$grantedCats);
+			$ascendency = $smartshop_category_handler->getAscendency($categoryid);
+
 		}else{
 			$searchCats = $grantedCats;
+			$ascendency = array(0);
 		}
 
 		$andOr = $andOr == 1 ? ' AND' : ' OR';
@@ -702,10 +758,10 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 						$sql .= $andOr;
 					}
 					$sql .= " itemid IN
-					(Select xoops_smartshop_item_attribut.itemid
+					(Select ".$this->db->prefix('smartshop_item_attribut').".itemid
 					FROM ".$this->db->prefix('smartshop_item_attribut').", ".$this->db->prefix('smartshop_category_attribut')."
 					WHERE ".$this->db->prefix('smartshop_category_attribut.attributid')." = ".$this->db->prefix('smartshop_item_attribut.attributid')."
-					AND (xoops_smartshop_category_attribut.parentid= ".$categoryid." OR xoops_smartshop_category_attribut.parentid = 0)";
+					AND (".$this->db->prefix('smartshop_category_attribut').".parentid IN (".implode(', ',$ascendency)."))";
 
 					$sql .= " AND (".$this->db->prefix('smartshop_category_attribut.name')." = '".$field."'
 							AND (".$this->db->prefix('smartshop_item_attribut.value')." LIKE '%".implode("%' ".$andOr." ".$this->db->prefix('smartshop_item_attribut.value')." LIKE '%", $keyword)."%'))) ";
@@ -715,11 +771,9 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
  		}
 
 		$ret = false;
-		/*$sql .= ' ORDER BY '.$criteria->getSort().' '.$criteria->getOrder();
-		$limit = $criteria->getLimit();
-        $start = $criteria->getStart();*/
+
 		$limit = $start = 0;
-		//echo "<br />" . $sql . "<br />";exit;
+
 
 		$result = $this->db->query($sql, $limit, $start);
 		if (!$result) {
@@ -740,7 +794,7 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 			$ret[] =& $item;
 			unset($item);
 		}
-		$this->initiateCustomFields($ret);
+		$ret = $this->initiateCustomFields($ret);
 		return $ret;
 	}
 
@@ -758,13 +812,7 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 
 	$sql .= " WHERE status = "._SSHOP_STATUS_ONLINE;
 
-	/*$sql = "SELECT * FROM ".$this->db->prefix('smartshop_item')." WHERE itemid IN (
-			SELECT DISTINCT ".$this->db->prefix('smartshop_item.itemid')." FROM ".$this->db->prefix('smartshop_item').",  ".
-			$this->db->prefix('smartshop_item_attribut').",  ".$this->db->prefix('smartshop_attribut_option')."
-			WHERE ".$this->db->prefix('smartshop_item.itemid')." = ".$this->db->prefix('smartshop_item_attribut.itemid')."
-			AND  ".$this->db->prefix('smartshop_item_attribut.attributid')." =  ".$this->db->prefix('smartshop_attribut_option.attributid')."
-			AND  ".$this->db->prefix('smartshop_item_attribut.value')." =  ".$this->db->prefix('smartshop_attribut_option.optionid')." ";
-	$sql .= " AND status = "._SSHOP_STATUS_ONLINE;*/
+
 
 	if ($userid != 0) {
 		$sql .= " AND uid = ".$userid;

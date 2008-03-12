@@ -128,7 +128,7 @@ class SmartshopTransaction extends SmartObject {
 
 		if($save){
 			if($this->handler->insert($this)){
-				//$smartshop_basket_handler->delete($basket);
+				$smartshop_basket_handler->delete($basket);
 				return true;
 			}else{
 				return false;
@@ -311,14 +311,14 @@ class SmartshopTransaction extends SmartObject {
 				//getObjects
 				$criteria = new CriteriaCompo();
 				$criteria->add(new Criteria('attributid', '('.implode(', ', $catAttIdArray).')', 'IN'));
-				$criteria->add(new Criteria('itemid', $this->getVar('itemid')));
-				$item_attributsObj = $smartshop_item_attribut_handler->getObjectsD($criteria);
+				$criteria->add(new Criteria('itemid', $this->getVar('transactionid')));
+				$item_attributsObj = $smartshop_item_attribut_handler->getObjects($criteria);
 			}
 		}
 
 		foreach ($category_attributObjs as  $category_attributObj) {
 			if (!$this->isNew()) {
-				$value = $item_attributsObj[$this->getVar('itemid')][$category_attributObj->id()]->getVar('value', 'e');
+				$value = $item_attributsObj[$this->getVar('transactionid')][$category_attributObj->id()]->getVar('value', 'e');
 			}else{
 				$value = $category_attributObj->getVar('att_default');
 			}
@@ -380,8 +380,11 @@ class SmartshopTransaction extends SmartObject {
 					$this->setControl($category_attributObj->getVar('name'), "image");
 					break;
 
+				case 'form_section' :
+					$this->setControl($category_attributObj->getVar('name'), "form_section");
+					break;
+
 	    		default:
-	    		//case 'text' :
 
 	    			break;
 	    	}
@@ -499,6 +502,60 @@ class SmartshopTransactionHandler extends SmartPersistableObjectHandler {
         return !$transactionObj->hasError();
 	}
 
+	function getObjects($criteria = null, $id_as_key = false, $as_object = true, $sql=false, $debug=false, $dropCF=false){
+    	$transactionsObj = parent::getObjects($criteria , $id_as_key, $as_object, $sql, $debug);
+		//patch PHP4
+		if($dropCF){
+			return $transactionsObj;
+		}else{
+			$transactionsObj2 = $this->initiateCustomFields($transactionsObj);
+			return $transactionsObj2;
+		}
+		/*$this->initiateCustomFields($itemsObj);
+		return $itemsObj;*/
+		// End patch PHP4
+   	}
+
+	function initiateCustomFields($transactionsObj) {
+
+		global $smartshop_item_attribut_handler, $smartshop_category_attribut_handler;
+		if(!isset($smartshop_item_attribut_handler)){
+			$smartshop_item_attribut_handler =& xoops_getmodulehandler('item_attribut','smartshop');
+			$smartshop_category_attribut_handler =& xoops_getmodulehandler('category_attribut','smartshop');
+		}
+		foreach($transactionsObj as $transactionObj){
+			$transactionidArray[] = $transactionObj->getVar('transactionid', 'e');
+		}
+		$criteria = new CriteriaCompo();
+		$criteria->add(new Criteria('itemid', '('.implode(', ', $transactionidArray).')', 'IN'));
+		$item_attributsObj = $smartshop_item_attribut_handler->getObjects($criteria);
+
+		$category_attributsObj = $smartshop_category_attribut_handler->getObjects(null, true);
+		foreach($transactionsObj as $transactionObj){
+	    	$constantVars = $transactionObj->vars;
+	    	foreach($item_attributsObj[$transactionObj->getVar('transactionid', 'e')] as $item_attributObj){
+		    	if($transactionObj->getVar('transactionid', 'e') == $item_attributObj->getVar('itemid', 'e')){
+			    	$attributid = $item_attributObj->getVar('attributid', 'e');
+					if(is_object($category_attributsObj[$attributid])){
+				    	$transactionObj->initVar($category_attributsObj[$attributid]->getVar('name'), $category_attributsObj[$attributid]->getObjectType(),
+					    	$item_attributObj->getVar('value'),	$category_attributsObj[$attributid]->getVar('required'), null, '', false,
+					    	$category_attributsObj[$attributid]->getVar('caption'),	$category_attributsObj[$attributid]->getVar('description'));
+					    	$transactionObj->setVar($category_attributsObj[$attributid]->getVar('name'), $item_attributObj->getVar('value'));
+
+				    	$transactionObj->setVarInfo($category_attributsObj[$attributid]->getVar('name'), 'custom_field_type',$category_attributsObj[$attributid]->getVar('att_type', 'n'));
+						$transactionObj->setVarInfo($category_attributsObj[$attributid]->getVar('name'), 'size',0);
+					}
+		    	}
+
+
+	    	}
+			//patch PHP4
+			$transactionsObj2[$transactionObj->getVar('transactionid', 'e')] = $transactionObj;
+		}
+		//patch PHP4
+	    return $transactionsObj2;
+
+    }
 
 }
 ?>

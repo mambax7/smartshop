@@ -123,7 +123,7 @@ switch ($op) {
     case "additem":
         include_once XOOPS_ROOT_PATH."/modules/smartobject/class/smartobjectcontroller.php";
         $controller = new SmartObjectController($smartshop_item_handler);
-        $itemObj = $controller->storeSmartObject();
+        $itemObj = $controller->storeSmartObject(false, true);
         $fct = isset($_POST['fct']) ? $_POST['fct'] :'' ;
 
         if ($itemObj->hasError()) {

@@ -86,12 +86,12 @@ foreach($itemsObj as $itemObj) {
 		$itemArray['auto_edit_links'] = $itemObj->getAutoEditLinks();
 	}
 	if($smartshop_module_use == 'boutique' && $xoopsModuleConfig['max_qty_basket']){
-		$itemArray['in_basket'] = (isset($basketItemArray[$itemObj->id()]) && intval($basketItemArray[$itemObj->id()]['quantity']) > 0);
+		$itemArray['in_basket'] = (isset($basketItemArray[$itemObj->getVar('itemid', 'e')]) && intval($basketItemArray[$itemObj->getVar('itemid', 'e')]['quantity']) > 0);
 		if($itemArray['in_basket']){
 			if($xoopsModuleConfig['max_qty_basket'] > 1){
-				$xoopsTpl->assign('message', sprintf(_MD_SSHOP_ALREADY_IN_BASKET, $basketItemArray[$itemid]['quantity']));
+				$itemArray['message'] = sprintf(_MD_SSHOP_ALREADY_IN_BASKET, $basketItemArray[$itemid]['quantity']);
 			}else{
-				$xoopsTpl->assign('message', _MD_SSHOP_ALREADY_IN_BASKET1);
+				$itemArray['message'] =  _MD_SSHOP_ALREADY_IN_BASKET1;
 			}
 		}
 	}

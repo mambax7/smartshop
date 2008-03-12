@@ -168,5 +168,36 @@ class SmartshopItem_attributHandler extends SmartPersistableObjectHandler {
     	unset($itemAttributsObj);
     	return $attributIdIndexed;
 	}
+	function &get($id, $as_object = true, $debug=false, $criteria=false) {
+        if (!$criteria) {
+        	$criteria = new CriteriaCompo();
+        }
+        for ($i = 0; $i < count($this->keyName); $i++) {
+            /**
+             * In some situations, the $id is not an INTEGER. SmartObjectTag is an example.
+             * Is the fact that we removed the intval() represents a security risk ?
+             */
+            //$criteria->add(new Criteria($this->keyName[$i], ($id[$i]), '=', $this->_itemname));
+            $criteria->add(new Criteria($this->keyName[$i], $id[$i], '=', $this->_itemname));
+        }
+
+        $criteria->setLimit(1);
+        if ($debug) {
+        	$obj_array = $this->getObjectsD($criteria, false, $as_object);
+        } else {
+        	$obj_array = $this->getObjects($criteria, false, $as_object);
+        	if(is_object($obj_array[$id[0]][$id[1]])){
+        		$obj_array[0] = $obj_array[$id[0]][$id[1]];
+        	}
+        }
+
+        if (count($obj_array) != 1) {
+            $obj = $this->create();
+            return $obj;
+        }
+
+        return $obj_array[0];
+    }
+
 }
 ?>

@@ -135,7 +135,7 @@ default:
 		$xoopsTpl->assign('total', $basket->getTotal());
 	}
 	$transactionObj = $smartshop_transaction_handler->create();
-	$transactionObj->basketToTransaction();
+	$transactionObj->basketToTransaction(false);
 	$transactionObj->initiateCustomFields();
 	$transactionObj->hideFieldFromForm(array('transactionid', 'basketid', 'tran_date', 'tran_uid'));
 	$transactionObj->makeFieldReadOnly(array('price', 'currency'));
