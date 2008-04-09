@@ -6,7 +6,7 @@
 * Author: The SmartFactory <www.smartfactory.ca>
 * Licence: GNU
 */
-
+ini_set('memory_limit','32M');
 function edittransaction($showmenu = false, $transactionid = 0, $parentid =0)
 {
 	global $smartshop_transaction_handler;
@@ -126,27 +126,49 @@ switch ($op) {
 
 	case 'with_selected_actions':
 		if($_POST["selected_action"] == 'delete_sel'){
-			smart_xoops_cp_header();
-			smart_adminMenu(2, _AM_SSHOP_TRANSACTIONS);
 
-			echo "Delete";
+			if ($_POST['confirm']) {
+				if($smartshop_transaction_handler->batchDelete(explode('|', $_POST['ids']))){
+					redirect_header("transaction.php", 2, _AM_SSHOP_TRANSDELETED);
+					exit();
+				}else{
+					redirect_header("transaction.php", 2, _AM_SSHOP_TRANSDELETE_ERROR);
+					exit();
+				}
+			} else {
+				smart_xoops_cp_header();
+				smart_adminMenu(2, _AM_SSHOP_TRANSACTIONS);
+
+				// no confirm: show deletion condition
+				xoops_confirm(array('op' => 'with_selected_actions', 'selected_action'=>'delete_sel', 'ids' => implode('|', $_POST['selected_smartobjects']), 'confirm' => 1), 'transaction.php', _AM_SSSHOP_DELETETHOSETRANS . " <br />'" .implode(', ', $_POST['selected_smartobjects']). "'. <br /> <br />", _AM_SSHOP_DELETE);
+			}
+
+
 			break;
 		}elseif($_POST["selected_action"] == 'export_sel'){
 				$criteria = new CriteriaCompo();
 				$criteria->add(new Criteria('transactionid', '(' . implode(', ', $_POST['selected_smartobjects']) . ')', 'IN'));
 
 				include_once(SMARTSHOP_ROOT_PATH . 'class/smartshopexport.php');
+				//this must be dynamic
 				$fields = array(
 					'transactionid',
 					'tran_date',
-					'itemid',
-					'price',
-					'quantity',
-					'uname',
-					'vendor_adp'
+					'email',
+					'new',
+					'your_name',
+					'fax_number',
+					'company_name',
+					'are_you_a_new_or_current_ami_customer',
+					'what_is_your_main_business_activity',
+					'what_are_the_primary_industries_served_by_your_com...',
+					'what_are_you_intended_use_s_of_our_product_s',
+					'do_you_currently_buy_materials_similar_to_ours_fro...',
+					'if_quot_yes_quot_will_you_share_the_vendor_039_s_n...',
+					'how_did_you_learn_about_ami'
 				);
 				$smartObjectExport = new SmartShopExport($smartshop_transaction_handler, $criteria, $fields);
-				$smartObjectExport->render();
+				$smartObjectExport->render(time().'_transactions.csv');
 				exit;
 			break;
 		}

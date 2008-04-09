@@ -30,18 +30,24 @@ class SmartShopExport extends SmartObjectExport {
 		global $smartshop_category_attribut_handler;
 		$this->filename = $filename;
 
-		$objects = $this->handler->getObjects($this->criteria);
-
+		$objects = $this->handler->getObjects($this->criteria, false, true, false, false, true);
+		if(strtolower(get_class($this->handler)) == 'smartshoptransactionhandler'){
+			$parentid = -1;
+		}else{
+			$parentid = $objects[0]->getVar('parentid');
+		}
 		$rows = array();
 		$columnsHeaders = array();
 		$firstObject = true;
-		$optionFields = $smartshop_category_attribut_handler->getOptionsFields($objects[0]->getVar('parentid'));
-
-    	// Loop through the array and change special custom varsall array value for a string
+		$optionFields = $smartshop_category_attribut_handler->getOptionsFields($parentid);
+    	// Loop through the array and change special custom vars all array value for a string
 
 		foreach ($objects as $object) {
 			$object->initiateCustomFields();
 			$row = array();
+			if(!$this->notDisplayFields){
+				$this->notDisplayFields = array();
+			}
 			foreach ($object->vars as $key=>$var) {
 				if ((!$this->fields || in_array($key, $this->fields)) && !in_array($key, $this->notDisplayFields))  {
 					if ($this->outputMethods && (isset($this->outputMethods[$key])) && (method_exists($object, $this->outputMethods[$key]))) {
@@ -50,14 +56,16 @@ class SmartShopExport extends SmartObjectExport {
 					}
 					elseif(isset($optionFields[$key])){
 						//Get value for each selected option if option field
-						if(is_array($object->getVar($key))){
-								foreach($object->getVar($key) as $val){
+						$object->vars[$key]['value'] = explode('|', $object->vars[$key]['value']);
+						if(is_array($object->vars[$key]['value'])){
+								foreach($object->vars[$key]['value'] as $val){
 	    						$option_val[] = $optionFields[$key][$val];
 							}
 		    				$row[$key] =  implode(', ', $option_val);
 						}else{
-							$option_val = $optionFields[$key][$object->getVar($key)];
+							$option_val = $optionFields[$key][$object->vars[$key]['value']];
 							$row[$key] =  $option_val;
+
 						}
 		    			unset($option_val);
 		    		}

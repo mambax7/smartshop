@@ -126,7 +126,7 @@ function editcategory_attribut($showmenu = false, $categoryid, $attributid = 0)
 
     } else {
     	if($categoryid == -1){
-    		$category_attributObj->hideFieldFromForm(array('sortable',  'checkoutdisp' ,'searchable', 'summarydisp', 'searchdisp', 'unicity', 'custom_rendering', 'display', 'dependent_attributid'));
+    		$category_attributObj->hideFieldFromForm(array('sortable', 'searchable', 'summarydisp', 'searchdisp', 'unicity', 'custom_rendering', 'checkoutdisp', 'dependent_attributid'));
 		}
     	$breadcrumb = _AM_SSHOP_CATEGORIES . " > " . _AM_SSHOP_CAT_ATTRIBUT . " > " . _AM_SSHOP_EDITING;
     	$title = _CO_SSHOP_CAT_ATTRIBUT_EDIT;
@@ -134,6 +134,8 @@ function editcategory_attribut($showmenu = false, $categoryid, $attributid = 0)
     	$collaps_name = 'category_attributedit';
     	$form_name = _CO_SSHOP_CAT_ATTRIBUT_EDIT;
     	$categoryid = $category_attributObj->getVar('parentid');
+    	$category_attributObj->setVarInfo('display', 'form_caption', _AM_SSHOP_CH_OUT_ATTRIBUT_DISPLAY);
+    	//'form_caption' => $form_caption,
     	if ($showmenu) {
 	        smart_adminMenu(0, $breadcrumb);
 	    }

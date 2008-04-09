@@ -148,7 +148,7 @@ class SmartshopItem_attribut extends SmartObject {
 class SmartshopItem_attributHandler extends SmartPersistableObjectHandler {
     function SmartshopItem_attributHandler($db) {
         $this->SmartPersistableObjectHandler($db, 'item_attribut', array('attributid', 'itemid'), 'value', false, 'smartshop');
-    }
+       }
 	function resetValues($attributid, $value = ''){
 		$criteria = new CriteriaCompo();
 		$criteria->add(new Criteria('attributid', $attributid));
@@ -168,6 +168,7 @@ class SmartshopItem_attributHandler extends SmartPersistableObjectHandler {
     	unset($itemAttributsObj);
     	return $attributIdIndexed;
 	}
+
 	function &get($id, $as_object = true, $debug=false, $criteria=false) {
         if (!$criteria) {
         	$criteria = new CriteriaCompo();
@@ -186,12 +187,15 @@ class SmartshopItem_attributHandler extends SmartPersistableObjectHandler {
         	$obj_array = $this->getObjectsD($criteria, false, $as_object);
         } else {
         	$obj_array = $this->getObjects($criteria, false, $as_object);
-        	if(is_object($obj_array[$id[0]][$id[1]])){
-        		$obj_array[0] = $obj_array[$id[0]][$id[1]];
+        	if(is_object($obj_array[$id[1]][$id[0]])){
+        		$obj_array[0] = $obj_array[$id[1]][$id[0]];
+        		$obj_array[0]->unsetNew();
+        		unset($obj_array[$id[1]]);
         	}
         }
 
-        if (count($obj_array) != 1) {
+        if (count($obj_array) < 1) {
+
             $obj = $this->create();
             return $obj;
         }
@@ -199,5 +203,209 @@ class SmartshopItem_attributHandler extends SmartPersistableObjectHandler {
         return $obj_array[0];
     }
 
+    /**
+     * insert a new object in the database
+     *
+     * @param object $obj reference to the object
+     * @param bool $force whether to force the query execution despite security settings
+     * @param bool $checkObject check if the object is dirty and clean the attributes
+     * @return bool FALSE if failed, TRUE if already present and unchanged or successful
+     */
+  function insert(&$obj, $force = false, $checkObject = true, $debug=false)
+    {
+    	if ($checkObject != false) {
+            if (!is_object($obj)) {
+                return false;
+            }
+
+            if (!is_a($obj, $this->className)) {
+            	$obj->setError(get_class($obj)." Differs from ".$this->className);
+                return false;
+            }
+            if (!$obj->isDirty()) {
+                $obj->setErrors("Not dirty"); //will usually not be outputted as errors are not displayed when the method returns true, but it can be helpful when troubleshooting code - Mith
+                return true;
+            }
+        }
+
+
+
+        $eventResult = $this->executeEvent('beforeSave', $obj);
+    	if (!$eventResult) {
+        	$obj->setErrors("An error occured during the BeforeSave event");
+        	return false;
+        }
+
+        if ($obj->isNew()) {
+	        $eventResult = $this->executeEvent('beforeInsert', $obj);
+	    	if (!$eventResult) {
+	        	$obj->setErrors("An error occured during the BeforeInsert event");
+	        	return false;
+	        }
+
+        }	else {
+	        $eventResult = $this->executeEvent('beforeUpdate', $obj);
+	    	if (!$eventResult) {
+	        	$obj->setErrors("An error occured during the BeforeUpdate event");
+	        	return false;
+	        }
+        }
+        if (!$obj->cleanVars()) {
+        	$obj->setErrors('Variables were not cleaned properly.');
+            return false;
+        }
+		$fieldsToStoreInDB = array();
+        foreach ($obj->cleanVars as $k => $v) {
+            if ($obj->vars[$k]['data_type'] == XOBJ_DTYPE_INT) {
+                $cleanvars[$k] = intval($v);
+            } elseif (is_array($v) ) {
+            	$cleanvars[ $k ] = $this->db->quoteString( implode( ',', $v ) );
+            } else {
+                $cleanvars[$k] = $this->db->quoteString($v);
+            }
+            if ($obj->vars[$k]['persistent']) {
+            	$fieldsToStoreInDB[$k] = $cleanvars[$k];
+            }
+
+        }
+        if ($obj->isNew()) {
+            if (!is_array($this->keyName)) {
+                if ($cleanvars[$this->keyName] < 1) {
+                    $cleanvars[$this->keyName] = $this->db->genId($this->table.'_'.$this->keyName.'_seq');
+                }
+            }
+
+            $sql = "INSERT INTO ".$this->table." (".implode(',', array_keys($fieldsToStoreInDB)).") VALUES (".implode(',', array_values($fieldsToStoreInDB)) .")";
+
+        } else {
+
+			$value_string = is_array($obj->getVar('value')) ? implode('|', $obj->getVar('value', 'n')) : $obj->getVar('value');
+
+            $sql = "UPDATE ".$this->table." SET value = '".$value_string."' WHERE item_attributid = ".$obj->getVar('item_attributid');
+
+
+           /* foreach ($fieldsToStoreInDB as $key => $value) {
+                if ((!is_array($this->keyName) && $key == $this->keyName) || (is_array($this->keyName) && in_array($key, $this->keyName))) {
+                    continue;
+                }
+                if (isset($notfirst) ) {
+                    $sql .= ",";
+                }
+                $sql .= " ".$key." = ".$value;
+                $notfirst = true;
+            }
+            if (is_array($this->keyName)) {
+                $whereclause = "";
+                for ($i = 0; $i < count($this->keyName); $i++) {
+                    if ($i > 0) {
+                        $whereclause .= " AND ";
+                    }
+                    $whereclause .= $this->keyName[$i]." = ".$obj->getVar($this->keyName[$i]);
+                }
+            }
+            else {
+                $whereclause = $this->keyName." = ".$obj->getVar($this->keyName);
+            }
+            $sql .= " WHERE ".$whereclause;*/
+        }
+
+        if ($debug) {
+        	xoops_debug($sql);
+        }
+
+        if (false != $force) {
+            $result = $this->db->queryF($sql);
+        } else {
+            $result = $this->db->query($sql);
+        }
+
+        if (!$result) {
+        	$obj->setErrors($this->db->error());
+            return false;
+        }
+
+        if ($obj->isNew() && !is_array($this->keyName)) {
+            $obj->assignVar($this->keyName, $this->db->getInsertId());
+    	}
+        $eventResult = $this->executeEvent('afterSave', $obj);
+    	if (!$eventResult) {
+        	$obj->setErrors("An error occured during the AfterSave event");
+        	return false;
+        }
+
+        if ($obj->isNew()) {
+        	$obj->unsetNew();
+	        $eventResult = $this->executeEvent('afterInsert', $obj);
+	    	if (!$eventResult) {
+	        	$obj->setErrors("An error occured during the AfterInsert event");
+	        	return false;
+	        }
+        } else {
+	        $eventResult = $this->executeEvent('afterUpdate', $obj);
+	    	if (!$eventResult) {
+	        	$obj->setErrors("An error occured during the AfterUpdate event");
+	        	return false;
+	        }
+        }
+        return true;
+    }
+
+    function clean(){
+    	global $smartshop_item_handler;
+    	$items = $smartshop_item_handler->getList();
+		$deleted = array();
+    	foreach ($items as $key => $item){
+    		$criteria = new CriteriaCompo();
+    		$criteria->add(new Criteria('itemid', $key));
+    		$criteria->setSort('itemid, attributid');
+    		$criteria->setOrder('ASC');
+    		$attributs = parent::getObjects($criteria);
+
+
+    		foreach($attributs as $att){
+    			if(isset($previous)){
+
+	    			if($previous->getVar('itemid') == $att->getVar('itemid') && $previous->getVar('attributid') == $att->getVar('attributid')){
+	    				if($att->getVar('item_attributid', 'e') < $previous->getVar('item_attributid', 'e')){
+	    					$deleted[] = $att->getVar('item_attributid', 'e');
+	    					$this->cleanup($att, 1);
+	       				}else{
+	    					$deleted[] = $previous->getVar('item_attributid', 'e');
+	    					$this->cleanup($previous, 1);
+	    					$previous = $att;
+	    				}
+	    			}else {
+	    				$previous = $att;
+	    			}
+    			}else{
+    				$previous = $att;
+    			}
+	 		}
+	 		unset($previous);
+    	}
+    	var_dump($deleted);exit;
+    }
+
+    function cleanup(&$obj, $force = false)
+    {
+
+        $sql = "DELETE FROM ".$this->table . " WHERE item_attributid = ".$obj->getVar('item_attributid', 'e');
+        if (false != $force) {
+            $result = $this->db->queryF($sql);
+        } else {
+            $result = $this->db->query($sql);
+        }
+        if (!$result) {
+            return false;
+        }
+
+        $eventResult = $this->executeEvent('afterDelete', $obj);
+    	if (!$eventResult) {
+        	$obj->setErrors("An error occured during the AfterDelete event");
+        	return false;
+        }
+        return true;
+    }
+
+
 }
-?>

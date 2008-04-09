@@ -41,11 +41,13 @@ if (!$categoryObj->accessGranted('category_view')) {
  if($smartshop_module_use == 'boutique' && isset($_REQUEST['quantity'])){
 	$basket = $smartshop_basket_handler->get();
 	$basket->add($itemid, $_REQUEST['quantity']);
-	if(isset($_REQUEST['back'])){
+	/*if(isset($_REQUEST['back'])){
 		redirect_header($smart_previous_page, 3, sprintf(_MD_SSHOP_ADDED_TO_BASKET,$_REQUEST['quantity'], $itemObj->getVar('name')));
 	}else{
 		redirect_header('category.php?categoryid='.$categoryid, 3, sprintf(_MD_SSHOP_ADDED_TO_BASKET,$_REQUEST['quantity'], $itemObj->getVar('name')));
-	}
+	}*/
+	redirect_header('transaction.php', 3, sprintf(_MD_SSHOP_ADDED_TO_BASKET,$_REQUEST['quantity'], $itemObj->getVar('name')));
+
 }
 
 if(isset($_GET['print'])){
@@ -117,7 +119,7 @@ if($xoopsModuleConfig['footer_display'] == 'item' || $xoopsModuleConfig['footer_
 	$xoopsTpl->assign('footer', $xoopsModuleConfig['footer'] );
 }
 $xoopsTpl->assign('module_home', smart_getModuleName(true, true));
-$xoopsTpl->assign('categoryPath', $categoryPath . $itemObj->getVar('name'));
+$xoopsTpl->assign('categoryPath', $categoryPath . $myts->undoHtmlSpecialChars($itemObj->getVar('name')));
 
 /*
  * basket feature

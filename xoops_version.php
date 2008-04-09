@@ -423,6 +423,21 @@ $modversion['config'][$i]['options'] = array(_MI_SSHOP_FOOTER_DISP_ITEM  => 'ite
                                   		 );
 $modversion['config'][$i]['default'] = 'both';
 
+$i++;
+$modversion['config'][$i]['name'] = 'header_transac';
+$modversion['config'][$i]['title'] = '_MI_SSHOP_HEADER_TRANSAC';
+$modversion['config'][$i]['description'] = '_MI_SSHOP_HEADER_TRANSAC_DSC';
+$modversion['config'][$i]['formtype'] = 'textarea';
+$modversion['config'][$i]['valuetype'] = 'text';
+$modversion['config'][$i]['default'] = '';
+
+$i++;
+$modversion['config'][$i]['name'] = 'footer_transac';
+$modversion['config'][$i]['title'] = '_MI_SSHOP_FOOTER_TRANSAC';
+$modversion['config'][$i]['description'] = '_MI_SSHOP_FOOTER_TRANSAC_DSC';
+$modversion['config'][$i]['formtype'] = 'textarea';
+$modversion['config'][$i]['valuetype'] = 'text';
+$modversion['config'][$i]['default'] = '';
 
 $i++;
 $modversion['config'][$i]['name'] = 'maximum_imagesize';

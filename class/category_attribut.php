@@ -440,34 +440,36 @@ class SmartshopCategory_attributHandler extends SmartPersistableObjectHandler {
     }
 
     function getOptionsFields($parentid){
-    	global $smartshop_category_handler;
-    	static $categoriesObj4getOptionsFields;
-    	if(!isset($categoriesObj4getOptionsFields)){
-    		$categoriesObj4getOptionsFields = $smartshop_category_handler->getObjects(null, true);
-   		}
-    	$parentArray = array(0, $parentid);
-    	$catObj = $categoriesObj4getOptionsFields[$parentid];
-    	while(is_object($catObj) && $catObj->getVar('parentid', 'e') != 0){
-    		$parentArray[] = $catObj->getVar('parentid', 'e');
-    		$catObj = $categoriesObj4getOptionsFields[$catObj->getVar('parentid', 'e')];
-    	}
-
-    	/*$criteria = new CriteriaCompo();
-    	$criteria->add(new Criteria('parentid', "(".implode(', ', $parentArray).")", 'IN'));
-    	$criteria->add(new Criteria('att_type', "('check', 'radio', 'select', 'select_multi')", 'IN'));
-    	$attributsObj = $this->getObjects($criteria);
-    	foreach($attributsObj as $attributObj) {
-    		$ret[$attributObj->getVar('name')] = $attributObj->getOptionsArray();
-    	}*/
-    	static $attributsObj4getOptionsFields;
-    	if(!isset($attributsObj4getOptionsFields[$parentid])){
-	    	$criteria = new CriteriaCompo();
-	    	$criteria->add(new Criteria('parentid', "(".implode(', ', $parentArray).")", 'IN'));
+    	if($parentid != -1){
+	    	global $smartshop_category_handler;
+	    	static $categoriesObj4getOptionsFields;
+	    	if(!isset($categoriesObj4getOptionsFields[$parentid])){
+	    		$categoriesObj4getOptionsFields = $smartshop_category_handler->getObjects(null, true);
+	   		}
+	    	$parentArray = array(0, $parentid);
+	    	$catObj = $categoriesObj4getOptionsFields[$parentid];
+	    	while(is_object($catObj) && $catObj->getVar('parentid', 'e') != 0){
+	    		$parentArray[] = $catObj->getVar('parentid', 'e');
+	    		$catObj = $categoriesObj4getOptionsFields[$catObj->getVar('parentid', 'e')];
+	    	}
+			static $attributsObj4getOptionsFields;
+	    	if(!isset($attributsObj4getOptionsFields[$parentid])){
+		    	$criteria = new CriteriaCompo();
+		    	$criteria->add(new Criteria('parentid', "(".implode(', ', $parentArray).")", 'IN'));
+		    	$criteria->add(new Criteria('att_type', "('check', 'radio', 'select', 'select_multi')", 'IN'));
+		    	$attributsObj4getOptionsFields[$parentid] = $this->getObjects($criteria);
+	    	}
+		    foreach($attributsObj4getOptionsFields[$parentid] as $attributObj) {
+	    		$ret[$attributObj->getVar('name')] = $attributObj->getOptionsArray();
+	    	}
+    	}else{
+    		$criteria = new CriteriaCompo();
+	    	$criteria->add(new Criteria('parentid', -1));
 	    	$criteria->add(new Criteria('att_type', "('check', 'radio', 'select', 'select_multi')", 'IN'));
-	    	$attributsObj4getOptionsFields[$parentid] = $this->getObjects($criteria);
-    	}
-	    foreach($attributsObj4getOptionsFields[$parentid] as $attributObj) {
-    		$ret[$attributObj->getVar('name')] = $attributObj->getOptionsArray();
+	    	$attributsObj4getOptionsFields = $this->getObjects($criteria);
+	    	foreach($attributsObj4getOptionsFields as $attributObj) {
+	    		$ret[$attributObj->getVar('name')] = $attributObj->getOptionsArray();
+	    	}
     	}
     	return $ret;
     }

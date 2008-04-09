@@ -480,4 +480,7 @@ define("_AM_SSHOP_MODIFY_COP_SUBMIT", "Submit");
 define("_AM_SSHOP_MODIFY_COP_CANCEL", "Cancel");
 define("_AM_SSHOP_MODIFY_COP_GCF", "Visible global custom fields");
 define("_AM_SSHOP_CH_OUT_ATTRIBUT_DISPLAY", "Visible in admin table");
+define("_AM_SSSHOP_DELETETHOSETRANS", "Are you sure you want to delete the folowing transactions?");
+define("_AM_SSHOP_TRANSDELETED", "Transactions deleted successfully");
+define("_AM_SSHOP_TRANSDELETE_ERROR", "An error ocured while deleting the transactions");
 ?>

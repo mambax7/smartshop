@@ -280,7 +280,7 @@ switch ($op) {
 		smart_adminMenu(0, _AM_SSHOP_CATEGORIES);
 
 		smart_collapsableBar('createdcategories', _AM_SSHOP_CATEGORIES, _AM_SSHOP_CATEGORIES_DSC);
-
+//$smartshop_item_attribut_handler->clean();
 		include_once SMARTOBJECT_ROOT_PATH."class/smartobjecttreetable.php";
 
 		$objectTable = new SmartObjectTreeTable($smartshop_category_handler);

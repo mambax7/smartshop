@@ -162,4 +162,9 @@ define("_MI_SSHOP_FOOTER_DISP_DSC", "");
 define("_MI_SSHOP_FOOTER_DISP_ITEM", "Item page");
 define("_MI_SSHOP_FOOTER_DISP_CAT", "Category page");
 define("_MI_SSHOP_FOOTER_DISP_BOTH", "Both");
+define("_MI_SSHOP_HEADER_TRANSAC", "Header - Checkout page");
+define("_MI_SSHOP_HEADER_TRANSAC_DSC", "");
+define("_MI_SSHOP_FOOTER_TRANSAC", "Footer - Checkout page");
+define("_MI_SSHOP_FOOTER_TRANSAC_DSC", "");
+
 ?>

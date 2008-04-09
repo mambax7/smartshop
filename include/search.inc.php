@@ -27,7 +27,13 @@ function smartshop_search($queryarray, $andor, $limit, $offset, $userid)
 		$keywords=implode('+', $queryarray);
 		$hightlight_key = "&amp;keywords=" . $keywords;
 	}
-
+	//hack for AMI
+	foreach($queryarray as $kw){
+		if(str_replace('-','', $kw) != $kw){
+			$queryarray[] = str_replace('-','', $kw);
+			$andor = 'OR';
+		}
+	}
 	$itemsObj =& $smartshop_item_handler->getItemsFromSearch($queryarray, $andor, $limit, $offset, $userid);
 
 	foreach ($itemsObj as $result) {

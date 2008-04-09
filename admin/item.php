@@ -133,7 +133,7 @@ switch ($op) {
 
         // no errors, we are good to go to save the custom fields
         $customFieldsObj =& $itemObj->getCustomFields();
-        foreach($customFieldsObj as $customField) {
+         foreach($customFieldsObj as $customField) {
         	$item_attributObj =& $smartshop_item_attribut_handler->get(array($customField->getVar('attributid'), $itemObj->getVar('itemid')));
         	if ($item_attributObj->isNew()) {
         		$item_attributObj->setVar('attributid', $customField->getVar('attributid'));
@@ -147,9 +147,16 @@ switch ($op) {
        			$item_attributObj->storeBasedURl($customField->getVar('att_type', 'n'));
        		}else{
 				$item_attributObj->setType('value', $customField->getObjectType());
-	        	$field_value = isset($_POST[$customField->getVar('name')]) ? $_POST[$customField->getVar('name')] : '';
+	        	if(is_array($_POST[$customField->getVar('name')])){
+	        		$field_value = implode('|', $_POST[$customField->getVar('name')]);
+
+	        	}else{
+	        		$field_value = isset($_POST[$customField->getVar('name')]) ? $_POST[$customField->getVar('name')] : '';
+
+	        	}
 	        	$item_attributObj->setVar('value', $field_value);
 			}
+
 
 	        if (!$smartshop_item_attribut_handler->insert($item_attributObj)) {
         		$itemObj->setErrors($item_attributObj->getErrors());

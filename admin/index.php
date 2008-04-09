@@ -8,5 +8,6 @@
 */
 
 include_once("category.php");
+
 exit;
 ?>

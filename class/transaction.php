@@ -138,7 +138,7 @@ class SmartshopTransaction extends SmartObject {
     }
 
     function getSummaryForEmail(){
-    	global $smartshop_basket_item_handler, $xoopsModuleConfig, $smartshop_basket_handler;
+    	global $smartshop_basket_item_handler, $xoopsModuleConfig, $smartshop_basket_handler, $myts;
 
     	$criteria = new CriteriaCompo();
 		$criteria->add(new Criteria('basketid', $this->getVar('basketid')));
@@ -157,7 +157,7 @@ class SmartshopTransaction extends SmartObject {
 
 		foreach($basket_itemsObj as $basket_itemObj){
 			if(intVal($basket_itemObj->getVar('quantity')) > 0){
-				$summary .= "<tr><td>".$basket_itemObj->getVar('item_name')."</td>";
+				$summary .= "<tr><td>".$myts->undoHtmlSpecialChars($basket_itemObj->getVar('item_name'))."</td>";
 				foreach($checkOutFields as $key => $checkOutField){
 					$summary .= "<td>".$basket_itemObj->getCheckoutFieldValue(array('basket'=>$basket, 'key'=>$key))."</td>";
 				}
@@ -322,7 +322,7 @@ class SmartshopTransaction extends SmartObject {
 			}else{
 				$value = $category_attributObj->getVar('att_default');
 			}
-    		$this->initVar($category_attributObj->getVar('name'), $category_attributObj->getObjectType(), $value, $category_attributObj->getVar('required'), null, '', false, $category_attributObj->getVar('caption'), $category_attributObj->getVar('description'));
+			$this->initVar($category_attributObj->getVar('name'), $category_attributObj->getObjectType(), $value, $category_attributObj->getVar('required'), null, '', false, $category_attributObj->getVar('caption'), $category_attributObj->getVar('description'));
     		$this->setVar($category_attributObj->getVar('name'), $value);
 
     		$this->setVarInfo($category_attributObj->getVar('name'), 'custom_field_type',$category_attributObj->getVar('att_type', 'n'));
@@ -502,6 +502,12 @@ class SmartshopTransactionHandler extends SmartPersistableObjectHandler {
         return !$transactionObj->hasError();
 	}
 
+	function batchDelete($ids){
+		$criteria = new CriteriaCompo();
+		$criteria->add(new Criteria('transactionid', '('.implode(', ', $ids).')', 'IN'));
+		return $this->deleteAll($criteria);
+	}
+
 	function getObjects($criteria = null, $id_as_key = false, $as_object = true, $sql=false, $debug=false, $dropCF=false){
     	$transactionsObj = parent::getObjects($criteria , $id_as_key, $as_object, $sql, $debug);
 		//patch PHP4
@@ -531,7 +537,7 @@ class SmartshopTransactionHandler extends SmartPersistableObjectHandler {
 		$item_attributsObj = $smartshop_item_attribut_handler->getObjects($criteria);
 
 		$category_attributsObj = $smartshop_category_attribut_handler->getObjects(null, true);
-		foreach($transactionsObj as $transactionObj){
+		foreach($transactionsObj as $key =>$transactionObj){
 	    	$constantVars = $transactionObj->vars;
 	    	foreach($item_attributsObj[$transactionObj->getVar('transactionid', 'e')] as $item_attributObj){
 		    	if($transactionObj->getVar('transactionid', 'e') == $item_attributObj->getVar('itemid', 'e')){
@@ -550,7 +556,7 @@ class SmartshopTransactionHandler extends SmartPersistableObjectHandler {
 
 	    	}
 			//patch PHP4
-			$transactionsObj2[$transactionObj->getVar('transactionid', 'e')] = $transactionObj;
+			$transactionsObj2[$key] = $transactionObj;
 		}
 		//patch PHP4
 	    return $transactionsObj2;

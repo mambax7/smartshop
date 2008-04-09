@@ -43,6 +43,11 @@ class SmartshopBasket_item extends SmartObject {
 		return $keyAndBasketArr['basket']->getItem_attributs($this->getVar('itemid', 'e'), $keyAndBasketArr['key']);
 	}
 
+	function getTitileHtml() {
+		global $myts;
+		return $myts->undoHtmlSpecialChars($this->getVar('item_name', 'n'));
+    }
+
 }
 class SmartshopBasket_itemHandler extends SmartPersistableObjectHandler {
     function SmartshopBasket_itemHandler($db) {
@@ -51,7 +56,7 @@ class SmartshopBasket_itemHandler extends SmartPersistableObjectHandler {
 		}
 
 	 function getObjects($criteria = null, $id_as_key = false, $as_object = true, $sql=false, $debug=false){
-		global $smartshop_item_handler;
+		global $smartshop_item_handler, $myts;
 		if(!isset($smartshop_item_handler)){
 			$smartshop_item_handler =& xoops_getmodulehandler('item', SMARTSHOP_DIRNAME);
 		}

@@ -110,7 +110,9 @@ class SmartshopItem extends SmartSeoObject {
     function toArray($from_search = false) {
     	global $xoopsModuleConfig, $smartshop_category_attribut_handler;
     	$objectArray = parent::toArray();
-
+		$myts =& MyTextSanitizer::getInstance();
+		$objectArray['name'] = $myts->undoHtmlSpecialChars($objectArray['name'], 1);
+		$objectArray["itemLink"] = $myts->undoHtmlSpecialChars($objectArray['itemLink'], 1);
     	if ($objectArray['image'] != -1 && $objectArray['image'] != '') {
     		$objectArray['image'] = str_replace('{XOOPS_URL}', XOOPS_URL, $objectArray['image']);
     		if(substr($objectArray['image'], 0,4 ) == 'http'){
@@ -653,6 +655,7 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 
 	function getObjects($criteria = null, $id_as_key = false, $as_object = true, $sql=false, $debug=false, $dropCF=false){
     	$itemsObj = parent::getObjects($criteria , $id_as_key, $as_object, $sql, $debug);
+
 		//patch PHP4
 		if($dropCF){
 			return $itemsObj;
@@ -680,7 +683,7 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 		$item_attributsObj = $smartshop_item_attribut_handler->getObjects($criteria);
 
 		$category_attributsObj = $smartshop_category_attribut_handler->getObjects(null, true);
-		foreach($itemsObj as $itemObj){
+		foreach($itemsObj as $key =>$itemObj){
 	    	$constantVars = $itemObj->vars;
 	    	foreach($item_attributsObj[$itemObj->getVar('itemid', 'e')] as $item_attributObj){
 		    	if($itemObj->getVar('itemid', 'e') == $item_attributObj->getVar('itemid', 'e')){
@@ -699,7 +702,7 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 
 	    	}
 			//patch PHP4
-			$itemsObj2[$itemObj->getVar('itemid', 'e')] = $itemObj;
+			$itemsObj2[$key] = $itemObj;
 		}
 		//patch PHP4
 	    return $itemsObj2;
@@ -798,7 +801,7 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 		return $ret;
 	}
 
-	function getItemsFromSearch($queryarray = array(), $andor = 'AND', $limit = 0, $offset = 0, $userid = 0)
+	function getItemsFromSearch($queryarray = array(), $andor = 'OR', $limit = 0, $offset = 0, $userid = 0)
 	{
 	$ret = array();
 

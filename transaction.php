@@ -115,7 +115,7 @@ default:
 	$objectTable->isForUserSide();
 	$objectTable->disableColumnsSorting();
 	$objectTable->hideFilterAndLimit();
-	$objectTable->addColumn(new SmartObjectColumn('item_name', 'left'));
+	$objectTable->addColumn(new SmartObjectColumn('item_name', 'left', false, 'getTitileHtml'));
 	if(in_array('description', $xoopsModuleConfig['display_fields'])){
 		$objectTable->addColumn(new SmartObjectColumn('description', 'left'));
 	}
@@ -141,6 +141,8 @@ default:
 	$transactionObj->makeFieldReadOnly(array('price', 'currency'));
 	$t_form = $transactionObj->getForm(_MD_SSHOP_ORDER_FORM , "form");
 	$xoopsTpl->assign('use_custom_version', $xoopsModuleConfig['use_custom_version']);
+	$xoopsTpl->assign('header_transac', $xoopsModuleConfig['header_transac']);
+	$xoopsTpl->assign('footer_transac', $xoopsModuleConfig['footer_transac']);
 	$t_form->assign($xoopsTpl);
 
 	//include_once("include/orderform.php");

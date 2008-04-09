@@ -42,7 +42,7 @@ if($xoopsModuleConfig['cat_inputtype_search'] == 'radio'){
 	$mytree -> makeMySelBox( "name", "weight", $categoryid, 1, 'categoryid' , 'submit()', 1, $grantedCats);
 
 	//makeMySelBox($title,$order="",$preset_id=0, $none=0, $sel_name="", $onchange="")
-	$sform -> addElement( new XoopsFormLabel( _MD_SSHOP_CATEGORY, ob_get_contents() ) );
+	$sform -> addElement( new XoopsFormLabel( _MD_SSHOP_CATEGORY."<br><span style='font-weight:normal;'>"._MD_SSHOP_CATEGORY_DSC."</span>", ob_get_contents() ) );
 	ob_end_clean();
 
 }

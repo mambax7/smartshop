@@ -157,7 +157,7 @@ define("_CO_SSHOP_CAT_ATT_SUMMARYDISPLAY_DSC", "If you click 'Yes', this attribu
 define("_CO_SSHOP_CAT_ATT_SEARCHDISPLAY", "Display on search results page");
 define("_CO_SSHOP_CAT_ATT_SEARCHDISPLAY_DSC", "If you click 'Yes', this attribute will be visible in the item search results page. 'Display in user side' must be set to 'Yes' as well to work.");
 define("_CO_SSHOP_CAT_ATT_CHECKOUTDISPLAY", "Display on checkout page");
-define("_CO_SSHOP_CAT_ATT_CHECKOUTDISPLAY_DSC", "If you click 'Yes', this attribute will be visible in the checkout page. 'Display in user side' must be set to 'Yes' as well to work.");
+define("_CO_SSHOP_CAT_ATT_CHECKOUTDISPLAY_DSC", "If you click 'Yes', this attribute will be visible in the checkout page.");
 
 define("_CO_SSHOP_CUSTOM_RENDERING", "Custom Rendering");
 define("_CO_SSHOP_CUSTOM_RENDERING_DSC", "Not implemented on option fields.<br/>" .
