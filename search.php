@@ -1,10 +1,12 @@
 <?php
-ini_set('memory_limit','32M');
+
 global $smartshop_category_handler, $smartshop_category_attribut_handler,$smartshop_item_handler, $xoopsUser, $xoopsModuleConfig;
 include_once("header.php");
 
 $xoopsOption['template_main'] = 'smartshop_searchresults.html';
 include_once(XOOPS_ROOT_PATH . "/header.php");
+
+
 $xoopsTpl->assign('cat_nav', $xoopsModuleConfig['category_nav']);
 $xoopsTpl->assign('nav_mode', $xoopsModuleConfig['nav_mode']);
 $op = isset($_REQUEST['op']) ? $_REQUEST['op'] : 'form';
@@ -25,18 +27,12 @@ $limit = $xoopsModuleConfig['items_per_page'] ;
 $cat_attObjs = $smartshop_category_attribut_handler->getObjects();
 $valid_fields = array();
 foreach($cat_attObjs as $cat_attObj){
-	$valid_fields[] = $cat_attObj->getVar('name');
+	$valid_fields[$cat_attObj->getVar('attributid', 'n')] = $cat_attObj->getVar('name');
 }
 
 if($categoryid){
 	$categoryObj = $smartshop_category_handler->get($categoryid);
 	$tpl = $categoryObj->getVar('template') == 'default' ? $xoopsModuleConfig['category_tpl'] :$categoryObj->getVar('template');
-	if($tpl == 'list'){
-		$xoopsTpl->assign('view_type', 'list_view');
-	}else{
-		$xoopsTpl->assign('view_type', 'table_view');
-	}
-
 	$xoopsTpl->assign('categoryid', $categoryid);
 	$customFieldsObj =& $categoryObj->getCustomFields();
 	$aCustomFields = array();
@@ -44,8 +40,27 @@ if($categoryid){
 		$aCustomFields[] = $customFieldObj->toArray();
 	}
 	$xoopsTpl->assign('customFields', $aCustomFields);
-}
+}else{
+	$tpl = $xoopsModuleConfig['category_tpl'] ;
 
+	$criteria = new CriteriaCompo();
+    $criteria->add(new Criteria('parentid', 0));
+    $criteria->add(new Criteria('searchdisp', 1));
+	$criteria->setSort('weight');
+	$customFieldsObj =& $smartshop_category_attribut_handler->getObjects($criteria);
+
+	$aCustomFields = array();
+	foreach ($customFieldsObj as $customFieldObj) {
+		$aCustomFields[] = $customFieldObj->toArray();
+	}
+	$xoopsTpl->assign('customFields', $aCustomFields);
+
+}
+if($tpl == 'list'){
+	$xoopsTpl->assign('view_type', 'list_view');
+}else{
+	$xoopsTpl->assign('view_type', 'table_view');
+}
 $query_string = isset($_REQUEST['categoryid']) ? "&categoryid=".$_REQUEST['categoryid'] : '';
 $query_string .= isset($_REQUEST['title']) ? "&title=".$_REQUEST['title'] : '';
 $query_string .= isset($_REQUEST['name_desc']) ? "&name_desc=".$_REQUEST['name_desc'] : '';
@@ -67,6 +82,10 @@ $xoopsTpl->assign('query_string', $query_string);
 switch ($op) {
 	case 'post' :
 		$criteria = new CriteriaCompo();
+		$criteria->SetSort($sort);
+		$criteria->SetOrder($order);
+		$criteria->SetStart($start);
+		$criteria->SetLimit($limit);
 
 		if ($name_desc != '') {
 			$keywords_array = explode(' ', $name_desc);
@@ -111,18 +130,22 @@ switch ($op) {
 		$custom_field_kw_array = array();
 		foreach($_REQUEST as $field => $keyword){
 			if(in_array($field, $valid_fields)){
+				foreach($valid_fields as $att_id => $field_name){
+					if($field_name == $field){
+						$custom_field_kw_array[$field]['attribut_id'] =	$att_id;
+					}
+				}
 				$multi = strpos($keyword, ' ');
 				if ($multi !== false) {
-					$custom_field_kw_array[$field] = explode(' ', $keyword);
+					$custom_field_kw_array[$field]['kw'] = explode(' ', $keyword);
 				}else{
-					$custom_field_kw_array[$field] =  $keyword;
+					$custom_field_kw_array[$field]['kw'] =  $keyword;
 				}
 			}
 		}
-
+		$totalItemsCount = $smartshop_item_handler->getObjectsForSearchForm($criteria, $custom_field_kw_array, $categoryid, intval($_REQUEST['andor']), true);
 		$itemsObj = $smartshop_item_handler->getObjectsForSearchForm($criteria, $custom_field_kw_array, $categoryid, intval($_REQUEST['andor']));
 		$items_array = array();
-		$totalItemsCount = count($itemsObj);
 		if($smartshop_module_use == 'boutique'){
 			$basket = $smartshop_basket_handler->get();
 			if(!$basket->isNew()){
@@ -130,6 +153,23 @@ switch ($op) {
 			}
 		}
 		if ($itemsObj) {
+			foreach ($itemsObj as $itemObj) {
+				$itemArray = $itemObj->toArray(true);
+				if($smartshop_module_use == 'boutique'  && $xoopsModuleConfig['max_qty_basket']){
+					$itemArray['in_basket'] = (isset($basketItemArray[$itemObj->getVar('itemid')]) && intval($basketItemArray[$itemObj->getVar('itemid')]['quantity']) > 0);
+					if($itemArray['in_basket']){
+						if($xoopsModuleConfig['max_qty_basket'] > 1){
+							$xoopsTpl->assign('message', sprintf(_MD_SSHOP_ALREADY_IN_BASKET, $basketItemArray[$itemid]['quantity']));
+						}else{
+							$xoopsTpl->assign('message', _MD_SSHOP_ALREADY_IN_BASKET1);
+						}
+					}
+				}
+				$items_array[] = $itemArray;
+			}
+		}
+
+		/*if ($itemsObj) {
 			$i =0;
 			foreach ($itemsObj as $itemObj) {
 				//var_dump(count($itemObj->vars));echo " Cat: ".$itemObj->getVar('parentid')."Id: ".$itemObj->getVar('itemid')."<br><br>";
@@ -150,18 +190,9 @@ switch ($op) {
 				}
 				$i++;
 			}
-		}
-		//----------
+		}*/
+
 		if($tpl == 'table'){
-			$order == 'ASC' ? asort($sortArray) : arsort($sortArray) ;
-			$i =0;
-			foreach($sortArray as $index => $item){
-				if($i >= $start && $i < ($start+$limit)){
-					$sortArrayTrunc[$index] = $item;
-				}
-				$i++;
-			}
-			$xoopsTpl->assign('sort_array', $sortArrayTrunc);
 			$xoopsTpl->assign('rev_order', $order == 'ASC' ? 'DESC' : 'ASC');
 			$order_icon = "<img src='".SMARTOBJECT_URL."images/actions/".($order == 'ASC' ? 'desc.png' : 'asc.png')."'/>";
 			$xoopsTpl->assign('order_icon', $order_icon);
@@ -176,7 +207,6 @@ switch ($op) {
 			$xoopsTpl->assign('qty_opt', $qty_opt);
 		}
 
-		//----------
 		$xoopsTpl->assign('items', $items_array);
 		$xoopsTpl->assign('smartshop_search_results', true);
 
