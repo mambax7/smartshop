@@ -708,7 +708,7 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 	    return $itemsObj2;
 
     }
-	function &getObjectsForSearchForm($criteria = null, $custom_field_kw_array = null, $categoryid = 0, $andOr=1)
+	function &getObjectsForSearchForm($criteria = null, $custom_field_kw_array = null, $categoryid = 0, $andOr=1, $only_count = false)
 	{
 		global $smartpermissions_handler, $smartshop_category_handler;
 		$smartpermissions_handler = new SmartobjectPermissionHandler($smartshop_category_handler);
@@ -727,8 +727,93 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 			$ascendency = array(0);
 		}
 
-		$andOr = $andOr == 1 ? ' AND' : ' OR';
-		$sql = "Select * FROM ".$this->db->prefix('smartshop_item');
+		$andOr = $andOr == 1 ? ' AND ' : ' OR ';
+
+		//New code
+
+		if($only_count){
+			$sql = "SELECT count(*) as count FROM (";
+		}else{
+			$sql = "SELECT * FROM (";
+		}
+		$sql .= "SELECT  ".$this->db->prefix('smartshop_item').".itemid, ".$this->db->prefix('smartshop_item').".name , status, description, price, parentid ";
+
+		foreach($custom_field_kw_array as $field => $info){
+			$sql .= ", sub_".$field.".value AS ".$field;
+		}
+
+		$sql .= " FROM ";
+
+		$isFirst = true;
+		foreach($custom_field_kw_array as $field => $info){
+			$sql .= "(SELECT ".$this->db->prefix('smartshop_item').".itemid itemid, value FROM ".$this->db->prefix('smartshop_item')
+			." RIGHT JOIN ".$this->db->prefix('smartshop_item_attribut')." ON ".$this->db->prefix('smartshop_item').".itemid  = "
+			.$this->db->prefix('smartshop_item_attribut').".itemid WHERE ".$this->db->prefix('smartshop_item_attribut').".attributid = ".
+			$info['attribut_id']." ) 	as sub_".$field." ";
+			if(!$isFirst){
+				$sql .= " ON sub_".$field.".itemid = sub_".$previous_field.".itemid ";
+			}else{
+				$isFirst = false;
+			}
+			$sql .= " RIGHT JOIN ";
+
+			$previous_field = $field;
+		}
+
+		$sql .= $this->db->prefix('smartshop_item')." ON sub_".$previous_field.".itemid  = ".$this->db->prefix('smartshop_item').".itemid";
+
+		$sql .= ") as extended_item ";
+		$isFirst = true;
+		$where = false;
+		foreach($custom_field_kw_array as $field => $info){
+			if($info['kw'] != 'Any' && !is_array($info['kw']) && $info['kw'] != ''){
+				if(!$isFirst){
+					$sql .=$andOr;
+				}else{
+					$sql .= " WHERE ";
+					$where = true;
+					$isFirst = false;
+				}
+				$sql .= $field." LIKE '%".$info['kw']."%'";
+			}elseif(is_array($info['kw'])){
+				if(!$isFirst){
+					$sql .=$andOr;
+				}else{
+					$sql .= " WHERE ";
+					$where = true;
+					$isFirst = false;
+				}
+				$sql .= "(".$field." LIKE '%".
+				implode("%' ".$andOr." ".$field." LIKE '%", $info['kw'])."%') ";
+
+			}
+
+		}
+
+		$sql .= !$where ? " WHERE " : " AND ";
+		$sql .= " status = "._SSHOP_STATUS_ONLINE." ";
+		if($categoryid > 0){
+			$sql .= " AND parentid IN (".implode(',', array_intersect($searchCats, $ascendency)).") ";
+		}else{
+			$sql .= " AND parentid IN (".implode(',', $searchCats).") ";
+		}
+		if($only_count){
+			$result = $this->db->query($sql);
+			$myrow = $this->db->fetchArray($result);
+			return $myrow['count'];
+			exit;
+		}
+
+		$sql .= "ORDER BY ".$criteria->getSort()." ".$criteria->getOrder();
+		$limit = $criteria->getLimit();
+		$start = $criteria->getStart();
+
+
+
+
+		//End new code (old code commented below)
+
+		/*$sql = "Select * FROM ".$this->db->prefix('smartshop_item');
 		$sql .= " ".$criteria->renderWhere();
 		$sql .= $criteria->renderWhere() == "" ? ' WHERE' : ' AND';
 		$sql .= " status = "._SSHOP_STATUS_ONLINE." ";
@@ -776,7 +861,8 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 		$ret = false;
 
 		$limit = $start = 0;
-
+		*/
+		//End old code
 
 		$result = $this->db->query($sql, $limit, $start);
 		if (!$result) {
@@ -797,7 +883,9 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 			$ret[] =& $item;
 			unset($item);
 		}
-		$ret = $this->initiateCustomFields($ret);
+		if(!empty($ret)){
+			$ret = $this->initiateCustomFields($ret);
+		}
 		return $ret;
 	}
 

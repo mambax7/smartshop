@@ -235,5 +235,7 @@ class SmartshopCategoryHandler extends SmartObjectCategoryHandler {
 		}
 		return $ascendency;
 	}
+
+
 }
 ?>

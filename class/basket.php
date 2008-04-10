@@ -56,12 +56,13 @@ class SmartshopBasket extends SmartObject {
 		}else{
 			$itemsObj = array();
 		}
+		$myts =& MyTextSanitizer::getInstance();
 		if($as_array){
 			$itemArray = array();
 			foreach($basket_itemsObj as  $basket_itemObj){
 				$itemContent = array();
 				$itemContent['id'] = $basket_itemObj->getVar('itemid');
-				$itemContent['item_name'] = $itemsObj[$basket_itemObj->getVar('itemid')]->getVar('name');
+				$itemContent['item_name'] = $myts->undoHtmlSpecialChars($itemsObj[$basket_itemObj->getVar('itemid')]->getVar('name'));
 				$itemContent['item_price'] = $itemsObj[$basket_itemObj->getVar('itemid')]->getVar('price');
 				$itemContent['quantity'] = $basket_itemObj->getVar('quantity');
 				$itemArray[$basket_itemObj->getVar('itemid')] = $itemContent;
