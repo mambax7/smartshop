@@ -44,42 +44,42 @@
 						</td>
 					<{/if}>								
 		   		</tr>
-				<{foreach key=key item=item from=$sort_array}> 
+				<{foreach key=key item=item from=$items}>
 					<tr class='<{cycle values="even, odd"}>'>
 						<td height="50" >
 			  				<{if $smartshop_module_use == 'adds'}>
-			  					<a href="<{$items.$key.link_url}>" target="_blank"><img src="<{$items.$key.image}>"</a>
+			  					<a href="<{$item.link_url}>" target="_blank"><img src="<{$item.image}>"</a>
 			  				<{else}>
-			  					<a href="<{$items.$key.itemUrl}>"><img src="<{$items.$key.image}>"</a>
+			  					<a href="<{$item.itemUrl}>"><img src="<{$item.image}>"</a>
 			  				<{/if}>
 			  			</td>
 				    	<td>
 							<div >
 								<{if $smartshop_module_use == 'adds'}>
-									<{$items.$key.name}>
+									<{$item.name}>
 								<{else}>
-									<a href='item.php?itemid=<{$items.$key.itemid}>'><{$items.$key.name}></a>
+									<a href='item.php?itemid=<{$item.itemid}>'><{$item.name}></a>
 								<{/if}>
 							</div>
 						</td>
 			  		   	<{if $display.description}>
 			  		   	<td>
-			  		   		<div ><{$items.$key.description}></div>
+			  		   		<div ><{$item.description}></div>
 						</td>	
 						<{/if}>
 							<{foreach item=customField from=$customFields}> 
 								<{if $customField.summarydisp && $customField.display}>
-						  			<td><{if $items.$key[$customField.name]}><{$items.$key[$customField.name]}><{else}>N/A<{/if}></td>
+						  			<td><{if $items.$key[$customField.name]}><{$item[$customField.name]}><{else}>N/A<{/if}></td>
 						  		<{/if}>
 							<{/foreach}>
 							
 							<{if $for_sale && $display.price}>
-								<td><{$items.$key.price}></td>
+								<td><{$item.price}></td>
 							<{/if}>	
 							<{if $smartshop_module_use=='boutique' && $max_qty_basket}>
 								<td>
 									<{if $items.$key.message}>
-										<{$items.$key.message}>
+										<{$item.message}>
 									<{else}>
 										<form action='<{$xoops_url}>/modules/smartshop/item.php' method='post'>
 										<{$smarty.const._MD_SSHOP_ADD}>
@@ -91,7 +91,7 @@
 											<input type='hidden' name='quantity' value='1'>	
 										<{/if}>
 										<{$smarty.const._MD_SSHOP_TO_BASKET}>
-										<input type='hidden' name='itemid' value='<{$items.$key.itemid}>'>
+										<input type='hidden' name='itemid' value='<{$item.itemid}>'>
 										<input type='hidden' name='back' value='1'>
 										<input type='submit' name='add_basket' value='<{$smarty.const._MD_SSHOP_SUBMIT}>'>
 										</form>

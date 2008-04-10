@@ -4,9 +4,9 @@
 	<h2><{$lang_searchresultstitle}></h2>
 	<{$lang_searchresultstext}>
 		<{if $view_type == 'table_view'}>
-			<{include file="db:smartshop_table_view.html"}>
+			<{include file="db:smartshop_search_table_view.html"}>
 		<{elseif $view_type == 'list_view'}>
-			<{include file="db:smartshop_list_view.html"}>
+			<{include file="db:smartshop_search_list_view.html"}>
 		<{else}>
 			<!-- classic basic view-->
 			<div class="smartshop_pages_navbar"><{$itemnav}></div>
