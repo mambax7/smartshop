@@ -1,5 +1,6 @@
 <?php
 
+
 /**
 * $Id$
 * Module: SmartShop
