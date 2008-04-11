@@ -19,8 +19,8 @@
 				  	</td>
 				  	<{/if}>
 					<{foreach item=customField from=$customFields}> 
-						<{if $customField.summarydisp && $customField.display}>
-				  			<td><{if !$customField.sortable}>
+						<{if $customField.display}>
+				  			<td><{if !$customField.sortable || $customField.att_type == 'Select list' || $customField.att_type == 'Checkbox'}>
 				  					<{$customField.caption}>
 				  				<{elseif $customField.name == $current_sort}>
 				  					<a href='<{$xoops_url}>/modules/smartshop/search.php?sort=<{$customField.name}>&order=<{$rev_order}><{$query_string}>'><{$customField.caption}><{$order_icon}></a>
@@ -68,7 +68,7 @@
 						</td>	
 						<{/if}>
 							<{foreach item=customField from=$customFields}> 
-								<{if $customField.summarydisp && $customField.display}>
+								<{if $customField.display}>
 						  			<td><{if $items.$key[$customField.name]}><{$item[$customField.name]}><{else}>N/A<{/if}></td>
 						  		<{/if}>
 							<{/foreach}>
@@ -78,7 +78,7 @@
 							<{/if}>	
 							<{if $smartshop_module_use=='boutique' && $max_qty_basket}>
 								<td>
-									<{if $items.$key.message}>
+									<{if $item.message}>
 										<{$item.message}>
 									<{else}>
 										<form action='<{$xoops_url}>/modules/smartshop/item.php' method='post'>

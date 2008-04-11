@@ -166,11 +166,11 @@ $modversion['templates'][$i]['file'] = 'smartshop_buy.html';
 $modversion['templates'][$i]['description'] = 'Buy page';
 
 $i++;
-$modversion['templates'][$i]['file'] = 'smartshop_list_view.html';
+$modversion['templates'][$i]['file'] = 'smartshop_search_list_view.html';
 $modversion['templates'][$i]['description'] = 'List view for search results';
 
 $i++;
-$modversion['templates'][$i]['file'] = 'smartshop_table_view.html';
+$modversion['templates'][$i]['file'] = 'smartshop_search_table_view.html';
 $modversion['templates'][$i]['description'] = 'Table view for search results';
 
 $i++;
@@ -481,7 +481,7 @@ $modversion['config'][$i]['options'] = array('TextArea'  => 'textarea',
                                    			 'Spaw' => 'spaw',
                                    			 'HTMLArea' => 'htmlarea'
                                   		 );
-$modversion['config'][$i]['default'] = 'fckeditor';
+$modversion['config'][$i]['default'] = 'textarea';
 
 $i++;
 $modversion['config'][$i]['name'] = 'show_mod_name_breadcrumb';

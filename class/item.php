@@ -741,30 +741,21 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 		foreach($custom_field_kw_array as $field => $info){
 			$sql .= ", sub_".$field.".value AS ".$field;
 		}
+		$sql .= " FROM ".$this->db->prefix('smartshop_item');
+		//$isFirst = true;
 
-		$sql .= " FROM ";
-
-		$isFirst = true;
 		foreach($custom_field_kw_array as $field => $info){
+			$sql .= " LEFT JOIN ";
 			$sql .= "(SELECT ".$this->db->prefix('smartshop_item').".itemid itemid, value FROM ".$this->db->prefix('smartshop_item')
-			." RIGHT JOIN ".$this->db->prefix('smartshop_item_attribut')." ON ".$this->db->prefix('smartshop_item').".itemid  = "
+			." LEFT JOIN ".$this->db->prefix('smartshop_item_attribut')." ON ".$this->db->prefix('smartshop_item').".itemid  = "
 			.$this->db->prefix('smartshop_item_attribut').".itemid WHERE ".$this->db->prefix('smartshop_item_attribut').".attributid = ".
 			$info['attribut_id']." ) 	as sub_".$field." ";
-			if(!$isFirst){
-				$sql .= " ON sub_".$field.".itemid = sub_".$previous_field.".itemid ";
-			}else{
-				$isFirst = false;
-			}
-			$sql .= " RIGHT JOIN ";
-
-			$previous_field = $field;
+			$sql .= " ON sub_".$field.".itemid = ".$this->db->prefix('smartshop_item').".itemid ";
 		}
-
-		$sql .= $this->db->prefix('smartshop_item')." ON sub_".$previous_field.".itemid  = ".$this->db->prefix('smartshop_item').".itemid";
-
 		$sql .= ") as extended_item ";
 		$isFirst = true;
 		$where = false;
+
 		foreach($custom_field_kw_array as $field => $info){
 			if($info['kw'] != 'Any' && !is_array($info['kw']) && $info['kw'] != ''){
 				if(!$isFirst){

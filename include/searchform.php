@@ -49,7 +49,7 @@ if($xoopsModuleConfig['cat_inputtype_search'] == 'radio'){
 
 
 // ITEM TITLE
-$title_text = new XoopsFormText(_MD_SSHOP_TITLE, 'title', 30, 255, $title);
+$title_text = new XoopsFormText(_MD_SSHOP_TITLE, 'name', 30, 255, $title);
 $title_text->setDescription(_MD_SSHOP_TITLE_SEARCH_DSC);
 $sform->addElement($title_text);
 
@@ -66,7 +66,7 @@ $ascendency = $smartshop_category_handler->getAscendency($categoryid);
 
 $criteria = new CriteriaCompo();
 $criteria->add(new Criteria('parentid', '('.implode($ascendency, ', ').')', 'IN'));
-$criteria->add(new Criteria('searchable', 1));
+//$criteria->add(new Criteria('searchable', 1));
 $criteria->setSort('weight');
 $criteria->setOrder('ASC');
 $attObjs = $smartshop_category_attribut_handler->getObjects($criteria);
@@ -136,6 +136,9 @@ foreach($attObjs as $att){
 			unset($yesno_box);
 			break;
 		}
+	}
+	elseif($att->getVar('sortable') == 1 && $att->getVar('display') == 1 && $att->getVar('searchdisp') == 1){
+		$sform->addElement(new XoopsFormHidden($att->getVar('name'), ''));
 	}
 }
 //-----------------------------------

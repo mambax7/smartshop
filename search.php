@@ -37,7 +37,9 @@ if($categoryid){
 	$customFieldsObj =& $categoryObj->getCustomFields();
 	$aCustomFields = array();
 	foreach ($customFieldsObj as $customFieldObj) {
-		$aCustomFields[] = $customFieldObj->toArray();
+		if($customFieldObj->getVar('searchdisp') == 1){
+			$aCustomFields[] = $customFieldObj->toArray();
+		}
 	}
 	$xoopsTpl->assign('customFields', $aCustomFields);
 }else{
@@ -143,6 +145,7 @@ switch ($op) {
 				}
 			}
 		}
+
 		$totalItemsCount = $smartshop_item_handler->getObjectsForSearchForm($criteria, $custom_field_kw_array, $categoryid, intval($_REQUEST['andor']), true);
 		$itemsObj = $smartshop_item_handler->getObjectsForSearchForm($criteria, $custom_field_kw_array, $categoryid, intval($_REQUEST['andor']));
 		$items_array = array();
@@ -159,9 +162,9 @@ switch ($op) {
 					$itemArray['in_basket'] = (isset($basketItemArray[$itemObj->getVar('itemid')]) && intval($basketItemArray[$itemObj->getVar('itemid')]['quantity']) > 0);
 					if($itemArray['in_basket']){
 						if($xoopsModuleConfig['max_qty_basket'] > 1){
-							$xoopsTpl->assign('message', sprintf(_MD_SSHOP_ALREADY_IN_BASKET, $basketItemArray[$itemid]['quantity']));
+							$itemArray['message'] = sprintf(_MD_SSHOP_ALREADY_IN_BASKET, $basketItemArray[$itemid]['quantity']);
 						}else{
-							$xoopsTpl->assign('message', _MD_SSHOP_ALREADY_IN_BASKET1);
+							$itemArray['message'] = _MD_SSHOP_ALREADY_IN_BASKET1;
 						}
 					}
 				}
