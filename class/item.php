@@ -113,6 +113,12 @@ class SmartshopItem extends SmartSeoObject {
 		$myts =& MyTextSanitizer::getInstance();
 		$objectArray['name'] = $myts->undoHtmlSpecialChars($objectArray['name'], 1);
 		$objectArray["itemLink"] = $myts->undoHtmlSpecialChars($objectArray['itemLink'], 1);
+		$objectArray["cloneItemLink"] = '<a href="' . SMARTSHOP_URL . 'admin/item.php?op=clone&itemid='
+				. $this->getVar('itemid') . '"><img src="'
+				. SMARTOBJECT_IMAGES_ACTIONS_URL . 'editcopy.png" style="vertical-align: middle;" alt="'
+				. _CO_SOBJECT_CLONE . '" title="' . _CO_SOBJECT_CLONE . '" /></a>';
+
+
     	if ($objectArray['image'] != -1 && $objectArray['image'] != '') {
     		$objectArray['image'] = str_replace('{XOOPS_URL}', XOOPS_URL, $objectArray['image']);
     		if(substr($objectArray['image'], 0,4 ) == 'http'){
@@ -572,7 +578,7 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 
 		unset($criteria);
 
-		foreach($objects as $object) {
+		foreach($objects[$obj->getVar('itemid', 'e')] as $object) {
 			$smartshop_item_attribut_handler->delete($object);
 		}
 		unset($criteria);
@@ -883,7 +889,25 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 	function getItemsFromSearch($queryarray = array(), $andor = 'OR', $limit = 0, $offset = 0, $userid = 0)
 	{
 	$ret = array();
+	//--------------------------------------------------------------------
 
+	$pre_sql = "SELECT * FROM ".$this->db->prefix('smartshop_attribut_option')." WHERE ";
+
+	if ($queryarray) {
+		for ($i = 0; $i < count($queryarray); $i++) {
+			$pre_sql .= " caption LIKE '%" . $queryarray[$i] . "%'  ";
+
+			if($i < (count($queryarray) -1)){
+				$pre_sql .= ' OR ';
+			}
+		}
+	}
+	$pre_result = $this->db->query($pre_sql, $limit, $offset);
+	$opt_ids = array();
+	while ($myrow = $this->db->fetchArray($pre_result)) {
+		$opt_ids[] = $myrow['optionid'];
+	}
+	//---------------------------------------------------------------------------------
 	$sql = "SELECT * FROM ".$this->db->prefix('smartshop_item')." WHERE itemid IN (
 			SELECT DISTINCT ".$this->db->prefix('smartshop_item.itemid')." FROM ".$this->db->prefix('smartshop_item')." LEFT JOIN ".
 			$this->db->prefix('smartshop_item_attribut')." ON  ".
@@ -917,7 +941,11 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 			AND status = "._SSHOP_STATUS_ONLINE." AND (";
 
 		for ($i = 0; $i < count($queryarray); $i++) {
-			$sql .= " ".$this->db->prefix('smartshop_item_attribut.value')." LIKE '%" . $queryarray[$i] . "%'  ";
+			$sql .= " ".$this->db->prefix('smartshop_item_attribut.value')." LIKE '%" . $queryarray[$i] . "%' ";
+			foreach($opt_ids as $opt_id){
+				$sql .= " OR ".$this->db->prefix('smartshop_item_attribut.value')." LIKE '%|" . $opt_id . "%' OR ";
+				$sql .= " ".$this->db->prefix('smartshop_item_attribut.value')." LIKE '%" .$opt_id."|%' ";
+			}
 			if($i < (count($queryarray) -1)){
 				$sql .= 'OR';
 			}
@@ -927,6 +955,7 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 
 	}
 	$sql .= " ))";
+
 
 	$result = $this->db->query($sql, $limit, $offset);
 	if (!$result) {
