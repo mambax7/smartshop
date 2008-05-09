@@ -17,9 +17,9 @@ class SmartShopForm extends SmartobjectForm{
 			$eltname    = $elt->getName();
 			$eltcaption = trim( $elt->getCaption() );
 			$eltmsg = empty($eltcaption) ? sprintf( _FORM_ENTER, $eltname ) : sprintf( _FORM_ENTER, $eltcaption );
-			$eltmsg = str_replace('"', '\"', stripslashes( $eltmsg ) );
-			$js .= "if ( myform.{$eltname}.value == \"\" ) "
-				. "{ window.alert(\"{$eltmsg}\"); myform.{$eltname}.focus(); return false; }\n";
+			$eltmsg = str_replace('"', '\"', stripslashes( $eltmsg ) );exit;
+			/*$js .= "if ( myform.{$eltname}.value == \"\" ) "
+				. "{ window.alert(\"{$eltmsg}\"); myform.{$eltname}.focus(); return false; }\n";*/
 		}
 		// Now, handle custom validation code
 		$elements = $this->getElements( true );

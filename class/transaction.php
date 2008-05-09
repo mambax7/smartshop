@@ -381,7 +381,7 @@ class SmartshopTransaction extends SmartObject {
 					break;
 
 				case 'form_section' :
-					$this->setControl($category_attributObj->getVar('name'), "form_section");
+					$this->setControl($category_attributObj->getVar('name'), "section");
 					break;
 
 	    		default:

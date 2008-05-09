@@ -742,7 +742,7 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 		}else{
 			$sql = "SELECT * FROM (";
 		}
-		$sql .= "SELECT  ".$this->db->prefix('smartshop_item').".itemid, ".$this->db->prefix('smartshop_item').".name , status, description, price, parentid ";
+		$sql .= "SELECT  ".$this->db->prefix('smartshop_item').".itemid, ".$this->db->prefix('smartshop_item').".name , image, status, description, price, parentid ";
 
 		foreach($custom_field_kw_array as $field => $info){
 			$sql .= ", sub_".$field.".value AS ".$field;
