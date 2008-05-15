@@ -264,6 +264,9 @@ class SmartshopItem_attributHandler extends SmartPersistableObjectHandler {
                 $cleanvars[$k] = $this->db->quoteString($v);
             }
             if ($obj->vars[$k]['persistent']) {
+            	if($obj->getVar('attributid') == 102 && $k == 'value'){
+					var_dump($obj->vars[$k]['data_type']);exit;
+				}
             	$fieldsToStoreInDB[$k] = $cleanvars[$k];
             }
 
@@ -279,9 +282,13 @@ class SmartshopItem_attributHandler extends SmartPersistableObjectHandler {
 
         } else {
 
+
 			$value_string = is_array($obj->getVar('value')) ? implode('|', $obj->getVar('value', 'n')) : $obj->getVar('value');
 
             $sql = "UPDATE ".$this->table." SET value = '".$value_string."' WHERE item_attributid = ".$obj->getVar('item_attributid');
+
+			//$sql = "UPDATE ".$this->table." SET value = '".implode(',', $fieldsToStoreInDB)."' WHERE item_attributid = ".$obj->getVar('item_attributid');
+
 
 
            /* foreach ($fieldsToStoreInDB as $key => $value) {

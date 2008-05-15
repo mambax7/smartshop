@@ -205,7 +205,9 @@ class SmartshopItem extends SmartSeoObject {
 			$keywords=$myts->htmlSpecialChars(trim(urldecode($_GET['keywords'])));
 			$h= new SmartHighlighter ($keywords, true , 'smart_highlighter');
 			foreach($this-> getVarInfo() as $field=>$value) {
-				$objectArray[$field] = $h->highlight($objectArray[$field]);
+				if($field != 'image' && $value['data_type'] != 'image'){
+					$objectArray[$field] = $h->highlight($objectArray[$field]);
+				}
 			}
 		}
 
@@ -714,7 +716,7 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 	    return $itemsObj2;
 
     }
-	function &getObjectsForSearchForm($criteria = null, $custom_field_kw_array = null, $categoryid = 0, $andOr=1, $only_count = false)
+	function &getObjectsForSearchForm($criteria=null , $title_crit = null, $desc_crit = null, $custom_field_kw_array = null, $categoryid = 0, $andOr=1, $only_count = false)
 	{
 		global $smartpermissions_handler, $smartshop_category_handler;
 		$smartpermissions_handler = new SmartobjectPermissionHandler($smartshop_category_handler);
@@ -788,6 +790,8 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 		}
 
 		$sql .= !$where ? " WHERE " : " AND ";
+		$sql .= isset($title_crit) ? $title_crit.' AND ' : '';
+		$sql .= isset($desc_crit) ? $desc_crit.' AND ' : '';
 		$sql .= " status = "._SSHOP_STATUS_ONLINE." ";
 		if($categoryid > 0){
 			$sql .= " AND parentid IN (".implode(',', array_intersect($searchCats, $ascendency)).") ";
@@ -807,69 +811,15 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 
 
 
-
-		//End new code (old code commented below)
-
-		/*$sql = "Select * FROM ".$this->db->prefix('smartshop_item');
-		$sql .= " ".$criteria->renderWhere();
-		$sql .= $criteria->renderWhere() == "" ? ' WHERE' : ' AND';
-		$sql .= " status = "._SSHOP_STATUS_ONLINE." ";
-		$sql .= " AND parentid IN (".implode(',', $searchCats).") ";
-		//$sql .= $categoryid > 0 ? " AND parentid =".$categoryid : "";
- 		if(!empty($custom_field_kw_array) ){ //if($categoryid && !empty($custom_field_kw_array)
- 			$isFirst = true;
-
- 			foreach($custom_field_kw_array as $field => $keyword){
-				if($keyword != 'Any' && !is_array($keyword) && $keyword != ''){
-					if($isFirst){
-						$sql .= " AND";
-					}else{
-						$sql .= $andOr;
-					}
-				$sql .= " itemid IN
-					(Select ".$this->db->prefix('smartshop_item_attribut').".itemid
-					FROM ".$this->db->prefix('smartshop_item_attribut').", ".$this->db->prefix('smartshop_category_attribut')."
-					WHERE ".$this->db->prefix('smartshop_category_attribut.attributid')." = ".$this->db->prefix('smartshop_item_attribut.attributid')."
-					AND (".$this->db->prefix('smartshop_category_attribut').".parentid = ".$categoryid." OR ".$this->db->prefix('smartshop_category_attribut').".parentid = 0)";
-
-					$sql .= " AND (".$this->db->prefix('smartshop_category_attribut.name')." = '".$field."'
-							AND ".$this->db->prefix('smartshop_item_attribut.value')." LIKE '%".$keyword."%')) ";
-
-				}
-				elseif(is_array($keyword)){
-					if($isFirst){
-						$sql .= " AND";
-					}else{
-						$sql .= $andOr;
-					}
-					$sql .= " itemid IN
-					(Select ".$this->db->prefix('smartshop_item_attribut').".itemid
-					FROM ".$this->db->prefix('smartshop_item_attribut').", ".$this->db->prefix('smartshop_category_attribut')."
-					WHERE ".$this->db->prefix('smartshop_category_attribut.attributid')." = ".$this->db->prefix('smartshop_item_attribut.attributid')."
-					AND (".$this->db->prefix('smartshop_category_attribut').".parentid IN (".implode(', ',$ascendency)."))";
-
-					$sql .= " AND (".$this->db->prefix('smartshop_category_attribut.name')." = '".$field."'
-							AND (".$this->db->prefix('smartshop_item_attribut.value')." LIKE '%".implode("%' ".$andOr." ".$this->db->prefix('smartshop_item_attribut.value')." LIKE '%", $keyword)."%'))) ";
-				}
-				$isFirst = false;
-			}
- 		}
-
-		$ret = false;
-
-		$limit = $start = 0;
-		*/
-		//End old code
-
 		$result = $this->db->query($sql, $limit, $start);
 		if (!$result) {
 			echo "Please please copy the query below and contact the administrator about this problem. Thank you.<br><br>".$sql;
 			exit;
-			return $ret;
+			return false;
 		}
 
 		if (count($result) == 0) {
-			return $ret;
+			return false;
 		}
 
 

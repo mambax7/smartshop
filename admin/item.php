@@ -147,13 +147,14 @@ switch ($op) {
        			$item_attributObj->storeBasedURl($customField->getVar('att_type', 'n'));
        		}else{
 				$item_attributObj->setType('value', $customField->getObjectType());
+
 	        	if(is_array($_POST[$customField->getVar('name')])){
 	        		$field_value = implode('|', $_POST[$customField->getVar('name')]);
 
 	        	}else{
 	        		$field_value = isset($_POST[$customField->getVar('name')]) ? $_POST[$customField->getVar('name')] : '';
-
 	        	}
+
 	        	$item_attributObj->setVar('value', $field_value);
 			}
 

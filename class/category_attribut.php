@@ -245,7 +245,8 @@ class SmartshopCategory_attribut extends SmartObject {
 
 			$title = '_'.$title;
 		}
-
+		// '-' cause sql bug in search feature
+		$title = str_replace('-', '_', $title);
 		if ($result > 1) {
 			$title = $title . '_' . time();
 		}

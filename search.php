@@ -12,7 +12,7 @@ $xoopsTpl->assign('nav_mode', $xoopsModuleConfig['nav_mode']);
 $op = isset($_REQUEST['op']) ? $_REQUEST['op'] : 'form';
 //$categoryid = (isset($categoryid)) ? $categoryid : ;
 $categoryid = (isset($_REQUEST['categoryid'])) ? $_REQUEST['categoryid'] : 0;
-$title = (isset($_REQUEST['title'])) ? $_REQUEST['title'] : '';
+$name = (isset($_REQUEST['name'])) ? $_REQUEST['name'] : '';
 $name_desc = (isset($_REQUEST['name_desc'])) ? $_REQUEST['name_desc'] : '';
 $desc = (isset($_REQUEST['desc'])) ? $_REQUEST['desc'] : '';
 $andOr = intval($_REQUEST['andor']) == 1 ? 'AND' : 'OR';
@@ -64,7 +64,7 @@ if($tpl == 'list'){
 	$xoopsTpl->assign('view_type', 'table_view');
 }
 $query_string = isset($_REQUEST['categoryid']) ? "&categoryid=".$_REQUEST['categoryid'] : '';
-$query_string .= isset($_REQUEST['title']) ? "&title=".$_REQUEST['title'] : '';
+$query_string .= isset($_REQUEST['name']) ? "&name=".$_REQUEST['name'] : '';
 $query_string .= isset($_REQUEST['name_desc']) ? "&name_desc=".$_REQUEST['name_desc'] : '';
 $query_string .= isset($_REQUEST['desc']) ? "&desc=".$_REQUEST['desc'] : '';
 $query_string .= "&andor=".$_REQUEST['andor'];
@@ -100,14 +100,15 @@ switch ($op) {
 				}
 			}
 		}
-		if ($title  != '') {
-			$keywords_array = explode(' ', $title);
+
+		if ($name  != '') {
+			$keywords_array = explode(' ', $name);
 			if (count($keywords_array) > 0) {
 				$isFirst = true;
 				foreach ($keywords_array as $keyword) {
 					if($keyword != ''){
-						$lclAndOr = ($isFirst) ? 'AND' : $andOr;
-						$criteria->add(new Criteria('name', "%$keyword%", 'LIKE'), $lclAndOr );
+						$lclAndOr = ($isFirst) ? '' : $andOr;
+						$title_crit .= $lclAndOr." name LIKE '%".$keyword."%' ";
 						$isFirt = false;
 					}
 				}
@@ -120,14 +121,13 @@ switch ($op) {
 				$isFirst = true;
 				foreach ($keywords_array as $keyword) {
 					if($keyword != ''){
-						$lclAndOr = ($title != '' && $isFirst) ? 'AND' : $andOr;
-						$criteria->add(new Criteria('description', "%$keyword%", 'LIKE'), $lclAndOr);
+						$lclAndOr = ($title != '' && $isFirst) ? '' : $andOr;
+						$desc_crit .= $lclAndOr." description LIKE '%".$keyword."%' ";
 						$isFirst = false;
 					}
 				}
 			}
 		}
-
 
 		$custom_field_kw_array = array();
 		foreach($_REQUEST as $field => $keyword){
@@ -146,8 +146,8 @@ switch ($op) {
 			}
 		}
 
-		$totalItemsCount = $smartshop_item_handler->getObjectsForSearchForm($criteria, $custom_field_kw_array, $categoryid, intval($_REQUEST['andor']), true);
-		$itemsObj = $smartshop_item_handler->getObjectsForSearchForm($criteria, $custom_field_kw_array, $categoryid, intval($_REQUEST['andor']));
+		$totalItemsCount = $smartshop_item_handler->getObjectsForSearchForm($criteria, $title_crit, $desc_crit, $custom_field_kw_array, $categoryid, intval($_REQUEST['andor']), true);
+		$itemsObj = $smartshop_item_handler->getObjectsForSearchForm($criteria, $title_crit, $desc_crit, $custom_field_kw_array, $categoryid, intval($_REQUEST['andor']));
 		$items_array = array();
 		if($smartshop_module_use == 'boutique'){
 			$basket = $smartshop_basket_handler->get();
