@@ -1,10 +1,10 @@
-Olá {X_UNAME},
+OlÃ¡ {X_UNAME},
 
-Uma nova adição foi submetida em {X_SITENAME} :
+Uma nova adiÃ§Ã£o foi submetida em {X_SITENAME} :
 
 "{ADD_NAME}"
 
-Você pode visualizá-la clicando aqui:
+VocÃª pode visualizÃ¡-la clicando aqui:
 
 {WAITINGFILES_URL}
 

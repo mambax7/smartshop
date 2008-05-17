@@ -8,21 +8,21 @@
 */
 
 if (!defined("XOOPS_ROOT_PATH")) {
- 	die("XOOPS root path not defined");
+ 	die("Caminho para a raiz nÃ£o estÃ¡ definido");
 }
 
 define("_MB_SSHOP_ALLCAT", "Todas as categorias");
 define("_MB_SSHOP_AUTO_LAST_ITEMS", "Exibir automaticamente o(s) ultimo(s) item(s)?");
 define("_MB_SSHOP_CATEGORY", "Categoria");
-define("_MB_SSHOP_CHARS", "Tamanho para um título");
+define("_MB_SSHOP_CHARS", "Tamanho para um tÃ­tulo");
 define("_MB_SSHOP_COMMENTS", "Comentarios(s)");
 define("_MB_SSHOP_DATE", "Data publicada");
 define("_MB_SSHOP_DISP", "Tela");
 define("_MB_SSHOP_DISPLAY_CATEGORY", "Exibir  nome da categoria?");
 define("_MB_SSHOP_DISPLAY_COMMENTS", "Exibir contagem de comentarios?");
 define("_MB_SSHOP_DISPLAY_TYPE", "Exibir tipos :");
-define("_MB_SSHOP_DISPLAY_TYPE_BLOCK", "Cada item é um bloco");
-define("_MB_SSHOP_DISPLAY_TYPE_BULLET", "Cada item é uma bala");
+define("_MB_SSHOP_DISPLAY_TYPE_BLOCK", "Cada item Ã© um bloco");
+define("_MB_SSHOP_DISPLAY_TYPE_BULLET", "Cada item Ã© uma bala");
 define("_MB_SSHOP_DISPLAY_WHO_AND_WHEN", "exibir o poster e a data?");
 define("_MB_SSHOP_FULLITEM", "Leia o artigo completo");
 define("_MB_SSHOP_HITS", "Numero de cliques");
@@ -39,7 +39,7 @@ define("_MB_SSHOP_VISITITEM", "Visite o ");
 define("_MB_SSHOP_WEIGHT", "Listar por peso");
 define("_MB_SSHOP_WHO_WHEN", "Publicado por %s em %s");
 //bd tree block hack
-define("_MB_SSHOP_LEVELS", "nível");
+define("_MB_SSHOP_LEVELS", "nÃ­vel");
 define("_MB_SSHOP_CURRENTCATEGORY", "Categoria correnti");
 define("_MB_SSHOP_ASC", "ASC");
 define("_MB_SSHOP_DESC", "DESC");
@@ -51,11 +51,11 @@ define("_MB_SSHOP_STATUS_0", "Expirado");
 define("_MB_SSHOP_STATUS_2", "Enviado");
 define("_MB_SSHOP_STATUS_4", "Vantido");
 define("_MB_SSHOP_SEARCH","busca");
-define("_MB_SSHOP_ADVS","Busca avançada");
+define("_MB_SSHOP_ADVS","Busca avanÃ§ada");
 define("_MB_SSHOP_CHOOSE","Escolha sua cacteristcas");
 define("_MB_SSHOP_SUBMIT_BL_FORMAT","modo de tela");
 define("_MB_SSHOP_LIST","Lista");
 define("_MB_SSHOP_SELECT","Selecionar");
 define("_MB_SSHOP_BASKET_DETAILS","Modificar/Solicitas");
-define("_MB_SSHOP_BASKET_EMPTY","Seu Carrinho está vazio");
+define("_MB_SSHOP_BASKET_EMPTY","Seu Carrinho estÃ¡ vazio");
 ?>

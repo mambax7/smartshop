@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title>Documento Sem Título</title>
+<title>Documento Sem TÃ­tulo</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <style type='text/css'>
 </style>
@@ -10,15 +10,15 @@
 <body>
 <div >
 
-   	Olá, <br /><br />
+   	OlÃ¡, <br /><br />
 
-	Você fez um pedido em {XOOPS_URL}. Aqui se encontrão os detalhes:<br /><br />
+	VocÃª fez um pedido em {XOOPS_URL}. Aqui se encontrÃ£o os detalhes:<br /><br />
 	{DETAILS}
 	<br /><br />
 
 	{XINFO}
 	<br /><br />
-	Você deve receber seu pedido em até 5 dias uteis.
+	VocÃª deve receber seu pedido em atÃ© 5 dias uteis.
 </div>
 
 <div>

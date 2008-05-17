@@ -1,8 +1,8 @@
-Olá {X_UNAME},
+OlÃ¡ {X_UNAME},
 
-Você adicionou "{ADD_NAME}" que foi aprovado neste site {X_SITENAME}.
+VocÃª adicionou "{ADD_NAME}" que foi aprovado neste site {X_SITENAME}.
 
-Você pode vizualizar clicando aqui:
+VocÃª pode vizualizar clicando aqui:
 
 {ADD_URL}
 
