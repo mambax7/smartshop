@@ -148,14 +148,15 @@ switch ($op) {
        		}else{
 				$item_attributObj->setType('value', $customField->getObjectType());
 
-	        	if(is_array($_POST[$customField->getVar('name')])){
+	        	if(is_array($_POST[$customField->getVar('name')]) && !$item_attributObj->isNew()){
+	        		//bug: if udating, setVar expect a string (val1|va2) for simple array type instead of a PHP array
 	        		$field_value = implode('|', $_POST[$customField->getVar('name')]);
-
 	        	}else{
 	        		$field_value = isset($_POST[$customField->getVar('name')]) ? $_POST[$customField->getVar('name')] : '';
 	        	}
 
 	        	$item_attributObj->setVar('value', $field_value);
+
 			}
 
 
