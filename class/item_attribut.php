@@ -75,7 +75,7 @@ class SmartshopItem_attribut extends SmartObject {
 				    			$fileObj->setVar('url', $object_fileurl.$uploaderObj->getSavedFileName());
 				    			$fileObj->setVar('caption', $_POST['caption_'.$key]);
 	    						$fileObj->setVar('description', $_POST['desc_'.$key]);
-	    			   			$this->storeFileObj(&$fileObj);
+	    			   			$this->storeFileObj($fileObj);
     							//todo : catch errors
 				    			$this->setVar('value', $fileObj->getVar('fileid'));
 				    		}
@@ -113,7 +113,7 @@ class SmartshopItem_attribut extends SmartObject {
 	    	$fileObj->setVar('url', $_POST['url_'.$key]);
 			$fileObj->setVar('caption', $_POST['caption_'.$key]);
 			$fileObj->setVar('description', $_POST['desc_'.$key]);
-			$this->storeFileObj(&$fileObj);
+			$this->storeFileObj($fileObj);
 			//todo : catch errors
 			$this->setVar('value', $fileObj->getVar('fileid'));
     	}elseif($data_type == 'image'){
@@ -137,7 +137,7 @@ class SmartshopItem_attribut extends SmartObject {
 			$linkObj->setVar('target', $_POST['target_'.$key]);
 			$linkObj->setVar('url', $_POST['url_'.$key]);
 			if($linkObj->getVar('url') != '' ){
-				$this->storeUrlLinkObj(&$linkObj);
+				$this->storeUrlLinkObj($linkObj);
 			}
 			//todo: catch errors
 			$this->setVar('value', $linkObj->getVar('urllinkid'));

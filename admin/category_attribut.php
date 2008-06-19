@@ -200,9 +200,8 @@ function editcategory_attribut($showmenu = false, $categoryid, $attributid = 0)
 		$sform->addElement($oldtypeHidden);
 	    //end type change
 	}
-
+    $sform->_action = 'category_attribut.php';
     $sform->assign($xoopsTpl, 'form');
-
     $xoopsTpl->display( 'db:smartobject_form.html' );
 
     smart_close_collapsable($collaps_name);
@@ -247,7 +246,9 @@ switch ($op) {
 
 		$attributid = isset($_GET['attributid']) ? intval($_GET['attributid']) : 0 ;
 		$categoryid = isset($_GET['categoryid']) ? intval($_GET['categoryid']) : 0 ;
-
+		if(!$categoryid){
+			$categoryid = isset($_REQUEST['parentid']) ? intval($_REQUEST['parentid']) : 0 ;
+		}
 		smart_xoops_cp_header();
 
 		editcategory_attribut(true, $categoryid, $attributid);
