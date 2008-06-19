@@ -356,6 +356,7 @@ class SmartshopCategory_attributHandler extends SmartPersistableObjectHandler {
 			}
 			$this->disableEvent('afterSave');
 			if($defaultArray){
+				$category_attributObj->unsetNew();
 				$category_attributObj->setVar('att_default',implode('|', $defaultArray));
 				$this->insert($category_attributObj);
 			}
