@@ -1,0 +1,12 @@
+###:===========================================================
+###:==| Credits Translations : Team http://br.impresscms.org.
+###:===========================================================
+###:==| Version.........: 1.1
+###:==| Charset.........: UTF-8
+###:==| Data Release....: 
+###:==| Module..........: SmartShop - Project impresscms.org
+###:==| Status..........: 
+###:==| Translations....: GibaPhp - gibaphp@impresscms.org
+###:==|                 :
+###:==| Revision........: 
+###:===========================================================
