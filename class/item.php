@@ -902,9 +902,9 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 		}
 
 
-
+		$sql .= " )";
 	}
-	$sql .= " ))";
+	$sql .= " )";
 
 
 	$result = $this->db->query($sql, $limit, $offset);
