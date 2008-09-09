@@ -58,7 +58,7 @@ class SmartshopItem extends SmartSeoObject {
         $this->initVar('uid', XOBJ_DTYPE_INT, '', false, null, '', false, _CO_SSHOP_ITEM_UID, _CO_SSHOP_ITEM_UID_DSC);
         $this->setControl('uid', 'user');
 
-        $this->initVar('date', XOBJ_DTYPE_INT, 0, false, null,'', false, _CO_SSHOP_ITEM_DATE, _CO_SSHOP_ITEM_DATE_DSC, true);
+        $this->initVar('date', XOBJ_DTYPE_STIME, 0, false, null,'', false, _CO_SSHOP_ITEM_DATE, _CO_SSHOP_ITEM_DATE_DSC, true);
 		$this->setControl('date', 'date_time');
 
       	//fields only relevant for user submiting oriented module use
