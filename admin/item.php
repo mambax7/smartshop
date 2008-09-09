@@ -121,6 +121,7 @@ switch ($op) {
         break;
 
     case "additem":
+       var_dump($_POST);exit;
         include_once XOOPS_ROOT_PATH."/modules/smartobject/class/smartobjectcontroller.php";
         $controller = new SmartObjectController($smartshop_item_handler);
         $itemObj = $controller->storeSmartObject(false, true);
