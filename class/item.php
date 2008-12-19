@@ -909,6 +909,9 @@ class SmartshopItemHandler extends SmartPersistableObjectHandler {
 
 	$result = $this->db->query($sql, $limit, $offset);
 	if (!$result) {
+		if(isset($userid)){
+			return false;
+		}
 		echo "Please please copy the query below and contact the administrator about this problem. Thank you.<br><br>".$sql;
 		exit;
 		return $ret;
